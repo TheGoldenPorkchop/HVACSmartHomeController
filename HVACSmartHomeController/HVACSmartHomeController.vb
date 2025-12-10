@@ -49,6 +49,14 @@ Public Class HVACSmartHomeController
         End Try
     End Sub
 
+    Private Function SeperateNumberFromSymbol(Value As String) As Double
+        Dim num As String()
+        num = Split(Value, "°")
+        Dim Number As Double = CDbl(num(0))
+        Return Number
+    End Function
+
+    'Event Handlers---------------------------------------------------------------------------
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         GetPorts()
         Try
@@ -58,6 +66,8 @@ Public Class HVACSmartHomeController
         End Try
         Timer1.Start()
     End Sub
+
+    Dim readData As Boolean
 
     Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
         QyatRead()
@@ -71,15 +81,16 @@ Public Class HVACSmartHomeController
     Private Sub SerialPort1_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles SerialPort1.DataReceived
         CheckForIllegalCrossThreadCalls = False
         Dim numberOfBytes = SerialPort1.BytesToRead
+
         Dim buffer(numberOfBytes - 1) As Byte
         Dim got As Integer = SerialPort1.Read(buffer, 0, numberOfBytes)
         Dim XCoordinate As Integer
         Dim YCoordinate As Integer
         Dim buttonsData As Integer
         If got > 0 Then
-            If buffer.Length = 5 Then
-                XCoordinate = CInt((buffer(0) / 256) * 100)
-                YCoordinate = CInt((buffer(2) / 256) * 100)
+            If buffer.Length >= 5 Then
+                XCoordinate = CInt((buffer(0) * 0.234375) + 40)
+                YCoordinate = CInt((buffer(2) * 0.234375) + 40)
 
                 Static oldX As Integer = XCoordinate
                 Static oldY As Integer = YCoordinate
@@ -96,6 +107,61 @@ Public Class HVACSmartHomeController
 
                 ByteTextBox.Text = buffer(0).ToString + " & " + buffer(1).ToString + " & " + buffer(2).ToString + " & " + buffer(3).ToString + " & " + buffer(4).ToString
             End If
+        End If
+    End Sub
+
+    Private Sub TempLowDecreaseButton_Click(sender As Object, e As EventArgs) Handles TempLowDecreaseButton.Click
+        Dim lowTemp As Double = 50
+        lowTemp = SeperateNumberFromSymbol(TempLowTextBox.Text)
+        lowTemp = lowTemp - 0.5
+        If lowTemp < 50 Then
+            TempLowTextBox.Text = "50°"
+        Else
+            If SeperateNumberFromSymbol(TempHighTextBox.Text) >= lowTemp Then
+
+            End If
+            TempLowTextBox.Text = CStr(lowTemp) + "°"
+        End If
+    End Sub
+
+    Private Sub TempLowIncreaseButton_Click(sender As Object, e As EventArgs) Handles TempLowIncreaseButton.Click
+        Dim lowTemp As Double = 90
+        lowTemp = SeperateNumberFromSymbol(TempLowTextBox.Text)
+        lowTemp = lowTemp + 0.5
+        If lowTemp > 90 Then
+            TempLowTextBox.Text = "90°"
+        Else
+            If SeperateNumberFromSymbol(TempHighTextBox.Text) <= lowTemp Then
+                TempLowTextBox.Text = TempLowTextBox.Text
+            Else
+                TempLowTextBox.Text = CStr(lowTemp) + "°"
+            End If
+        End If
+    End Sub
+
+    Private Sub TempHighDecreaseButton_Click(sender As Object, e As EventArgs) Handles TempHighDecreaseButton.Click
+        Dim highTemp As Double = 50
+        highTemp = SeperateNumberFromSymbol(TempHighTextBox.Text)
+        highTemp = highTemp - 0.5
+        If highTemp < 50 Then
+            TempHighTextBox.Text = "50°"
+        Else
+            If SeperateNumberFromSymbol(TempLowTextBox.Text) >= highTemp Then
+                TempHighTextBox.Text = TempHighTextBox.Text
+            Else
+                TempHighTextBox.Text = CStr(highTemp) + "°"
+            End If
+        End If
+    End Sub
+
+    Private Sub TempHighIncreaseButton_Click(sender As Object, e As EventArgs) Handles TempHighIncreaseButton.Click
+        Dim highTemp As Double = 90
+        highTemp = SeperateNumberFromSymbol(TempHighTextBox.Text)
+        highTemp = highTemp + 0.5
+        If highTemp > 90 Then
+            TempHighTextBox.Text = "90°"
+        Else
+            TempHighTextBox.Text = CStr(highTemp) + "°"
         End If
     End Sub
 End Class

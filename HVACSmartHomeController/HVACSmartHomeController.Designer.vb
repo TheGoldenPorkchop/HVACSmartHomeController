@@ -36,6 +36,14 @@ Partial Class HVACSmartHomeController
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
+        Me.TempHighTextBox = New System.Windows.Forms.TextBox()
+        Me.TempLowTextBox = New System.Windows.Forms.TextBox()
+        Me.Label5 = New System.Windows.Forms.Label()
+        Me.Label6 = New System.Windows.Forms.Label()
+        Me.TempLowDecreaseButton = New System.Windows.Forms.Button()
+        Me.TempLowIncreaseButton = New System.Windows.Forms.Button()
+        Me.TempHighDecreaseButton = New System.Windows.Forms.Button()
+        Me.TempHighIncreaseButton = New System.Windows.Forms.Button()
         Me.AnalogCoordsGroupBox.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -165,17 +173,98 @@ Partial Class HVACSmartHomeController
         '
         Me.Timer1.Interval = 10
         '
+        'TempHighTextBox
+        '
+        Me.TempHighTextBox.Location = New System.Drawing.Point(147, 241)
+        Me.TempHighTextBox.Name = "TempHighTextBox"
+        Me.TempHighTextBox.ReadOnly = True
+        Me.TempHighTextBox.Size = New System.Drawing.Size(76, 22)
+        Me.TempHighTextBox.TabIndex = 18
+        Me.TempHighTextBox.Text = "90°"
+        '
+        'TempLowTextBox
+        '
+        Me.TempLowTextBox.Location = New System.Drawing.Point(20, 241)
+        Me.TempLowTextBox.Name = "TempLowTextBox"
+        Me.TempLowTextBox.ReadOnly = True
+        Me.TempLowTextBox.Size = New System.Drawing.Size(76, 22)
+        Me.TempLowTextBox.TabIndex = 19
+        Me.TempLowTextBox.Text = "50°"
+        '
+        'Label5
+        '
+        Me.Label5.AutoSize = True
+        Me.Label5.Location = New System.Drawing.Point(41, 222)
+        Me.Label5.Name = "Label5"
+        Me.Label5.Size = New System.Drawing.Size(31, 16)
+        Me.Label5.TabIndex = 20
+        Me.Label5.Text = "Low"
+        '
+        'Label6
+        '
+        Me.Label6.AutoSize = True
+        Me.Label6.Location = New System.Drawing.Point(161, 222)
+        Me.Label6.Name = "Label6"
+        Me.Label6.Size = New System.Drawing.Size(35, 16)
+        Me.Label6.TabIndex = 21
+        Me.Label6.Text = "High"
+        '
+        'TempLowDecreaseButton
+        '
+        Me.TempLowDecreaseButton.Location = New System.Drawing.Point(20, 269)
+        Me.TempLowDecreaseButton.Name = "TempLowDecreaseButton"
+        Me.TempLowDecreaseButton.Size = New System.Drawing.Size(35, 34)
+        Me.TempLowDecreaseButton.TabIndex = 22
+        Me.TempLowDecreaseButton.Text = "<"
+        Me.TempLowDecreaseButton.UseVisualStyleBackColor = True
+        '
+        'TempLowIncreaseButton
+        '
+        Me.TempLowIncreaseButton.Location = New System.Drawing.Point(61, 269)
+        Me.TempLowIncreaseButton.Name = "TempLowIncreaseButton"
+        Me.TempLowIncreaseButton.Size = New System.Drawing.Size(35, 34)
+        Me.TempLowIncreaseButton.TabIndex = 23
+        Me.TempLowIncreaseButton.Text = ">"
+        Me.TempLowIncreaseButton.UseVisualStyleBackColor = True
+        '
+        'TempHighDecreaseButton
+        '
+        Me.TempHighDecreaseButton.Location = New System.Drawing.Point(147, 269)
+        Me.TempHighDecreaseButton.Name = "TempHighDecreaseButton"
+        Me.TempHighDecreaseButton.Size = New System.Drawing.Size(35, 34)
+        Me.TempHighDecreaseButton.TabIndex = 24
+        Me.TempHighDecreaseButton.Text = "<"
+        Me.TempHighDecreaseButton.UseVisualStyleBackColor = True
+        '
+        'TempHighIncreaseButton
+        '
+        Me.TempHighIncreaseButton.Location = New System.Drawing.Point(188, 269)
+        Me.TempHighIncreaseButton.Name = "TempHighIncreaseButton"
+        Me.TempHighIncreaseButton.Size = New System.Drawing.Size(35, 34)
+        Me.TempHighIncreaseButton.TabIndex = 25
+        Me.TempHighIncreaseButton.Text = ">"
+        Me.TempHighIncreaseButton.UseVisualStyleBackColor = True
+        '
         'HVACSmartHomeController
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(800, 450)
+        Me.Controls.Add(Me.TempHighIncreaseButton)
+        Me.Controls.Add(Me.TempHighDecreaseButton)
+        Me.Controls.Add(Me.TempLowIncreaseButton)
+        Me.Controls.Add(Me.TempLowDecreaseButton)
+        Me.Controls.Add(Me.Label6)
+        Me.Controls.Add(Me.Label5)
+        Me.Controls.Add(Me.TempLowTextBox)
+        Me.Controls.Add(Me.TempHighTextBox)
         Me.Controls.Add(Me.AnalogCoordsGroupBox)
         Me.Name = "HVACSmartHomeController"
         Me.Text = "Form1"
         Me.AnalogCoordsGroupBox.ResumeLayout(False)
         Me.AnalogCoordsGroupBox.PerformLayout()
         Me.ResumeLayout(False)
+        Me.PerformLayout()
 
     End Sub
 
@@ -192,4 +281,12 @@ Partial Class HVACSmartHomeController
     Friend WithEvents ButtonsTextBox As TextBox
     Friend WithEvents ConnectButton As Button
     Friend WithEvents ByteTextBox As TextBox
+    Friend WithEvents TempHighTextBox As TextBox
+    Friend WithEvents TempLowTextBox As TextBox
+    Friend WithEvents Label5 As Label
+    Friend WithEvents Label6 As Label
+    Friend WithEvents TempLowDecreaseButton As Button
+    Friend WithEvents TempLowIncreaseButton As Button
+    Friend WithEvents TempHighDecreaseButton As Button
+    Friend WithEvents TempHighIncreaseButton As Button
 End Class
