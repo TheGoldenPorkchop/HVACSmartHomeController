@@ -31,8 +31,8 @@ Partial Class HVACSmartHomeController
         Me.ConnectButton = New System.Windows.Forms.Button()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.ButtonsTextBox = New System.Windows.Forms.TextBox()
-        Me.XAnalogTextBox = New System.Windows.Forms.TextBox()
-        Me.YAnalogTextBox = New System.Windows.Forms.TextBox()
+        Me.Analog1TextBox = New System.Windows.Forms.TextBox()
+        Me.Analog2TextBox = New System.Windows.Forms.TextBox()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
@@ -44,6 +44,9 @@ Partial Class HVACSmartHomeController
         Me.TempLowIncreaseButton = New System.Windows.Forms.Button()
         Me.TempHighDecreaseButton = New System.Windows.Forms.Button()
         Me.TempHighIncreaseButton = New System.Windows.Forms.Button()
+        Me.ModeTextBox = New System.Windows.Forms.TextBox()
+        Me.ErrorTextBox = New System.Windows.Forms.TextBox()
+        Me.Timer2 = New System.Windows.Forms.Timer(Me.components)
         Me.AnalogCoordsGroupBox.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -78,9 +81,9 @@ Partial Class HVACSmartHomeController
         Me.AnalogCoordsGroupBox.Controls.Add(Me.Label4)
         Me.AnalogCoordsGroupBox.Controls.Add(Me.ButtonsTextBox)
         Me.AnalogCoordsGroupBox.Controls.Add(Me.Label3)
-        Me.AnalogCoordsGroupBox.Controls.Add(Me.XAnalogTextBox)
+        Me.AnalogCoordsGroupBox.Controls.Add(Me.Analog1TextBox)
         Me.AnalogCoordsGroupBox.Controls.Add(Me.PortsComboBox)
-        Me.AnalogCoordsGroupBox.Controls.Add(Me.YAnalogTextBox)
+        Me.AnalogCoordsGroupBox.Controls.Add(Me.Analog2TextBox)
         Me.AnalogCoordsGroupBox.Controls.Add(Me.Label2)
         Me.AnalogCoordsGroupBox.Controls.Add(Me.Label1)
         Me.AnalogCoordsGroupBox.Location = New System.Drawing.Point(12, 327)
@@ -125,25 +128,25 @@ Partial Class HVACSmartHomeController
         Me.ButtonsTextBox.Size = New System.Drawing.Size(66, 22)
         Me.ButtonsTextBox.TabIndex = 13
         '
-        'XAnalogTextBox
+        'Analog1TextBox
         '
-        Me.XAnalogTextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+        Me.Analog1TextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.XAnalogTextBox.Location = New System.Drawing.Point(217, 39)
-        Me.XAnalogTextBox.Name = "XAnalogTextBox"
-        Me.XAnalogTextBox.ReadOnly = True
-        Me.XAnalogTextBox.Size = New System.Drawing.Size(66, 22)
-        Me.XAnalogTextBox.TabIndex = 9
+        Me.Analog1TextBox.Location = New System.Drawing.Point(217, 39)
+        Me.Analog1TextBox.Name = "Analog1TextBox"
+        Me.Analog1TextBox.ReadOnly = True
+        Me.Analog1TextBox.Size = New System.Drawing.Size(66, 22)
+        Me.Analog1TextBox.TabIndex = 9
         '
-        'YAnalogTextBox
+        'Analog2TextBox
         '
-        Me.YAnalogTextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+        Me.Analog2TextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.YAnalogTextBox.Location = New System.Drawing.Point(217, 66)
-        Me.YAnalogTextBox.Name = "YAnalogTextBox"
-        Me.YAnalogTextBox.ReadOnly = True
-        Me.YAnalogTextBox.Size = New System.Drawing.Size(66, 22)
-        Me.YAnalogTextBox.TabIndex = 10
+        Me.Analog2TextBox.Location = New System.Drawing.Point(217, 66)
+        Me.Analog2TextBox.Name = "Analog2TextBox"
+        Me.Analog2TextBox.ReadOnly = True
+        Me.Analog2TextBox.Size = New System.Drawing.Size(66, 22)
+        Me.Analog2TextBox.TabIndex = 10
         '
         'Label2
         '
@@ -245,11 +248,33 @@ Partial Class HVACSmartHomeController
         Me.TempHighIncreaseButton.Text = ">"
         Me.TempHighIncreaseButton.UseVisualStyleBackColor = True
         '
+        'ModeTextBox
+        '
+        Me.ModeTextBox.Location = New System.Drawing.Point(229, 241)
+        Me.ModeTextBox.Name = "ModeTextBox"
+        Me.ModeTextBox.ReadOnly = True
+        Me.ModeTextBox.Size = New System.Drawing.Size(100, 22)
+        Me.ModeTextBox.TabIndex = 26
+        '
+        'ErrorTextBox
+        '
+        Me.ErrorTextBox.Location = New System.Drawing.Point(229, 269)
+        Me.ErrorTextBox.Name = "ErrorTextBox"
+        Me.ErrorTextBox.ReadOnly = True
+        Me.ErrorTextBox.Size = New System.Drawing.Size(100, 22)
+        Me.ErrorTextBox.TabIndex = 27
+        '
+        'Timer2
+        '
+        Me.Timer2.Interval = 90000
+        '
         'HVACSmartHomeController
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(800, 450)
+        Me.Controls.Add(Me.ErrorTextBox)
+        Me.Controls.Add(Me.ModeTextBox)
         Me.Controls.Add(Me.TempHighIncreaseButton)
         Me.Controls.Add(Me.TempHighDecreaseButton)
         Me.Controls.Add(Me.TempLowIncreaseButton)
@@ -272,8 +297,8 @@ Partial Class HVACSmartHomeController
     Friend WithEvents Label3 As Label
     Friend WithEvents PortsComboBox As ComboBox
     Friend WithEvents AnalogCoordsGroupBox As GroupBox
-    Friend WithEvents XAnalogTextBox As TextBox
-    Friend WithEvents YAnalogTextBox As TextBox
+    Friend WithEvents Analog1TextBox As TextBox
+    Friend WithEvents Analog2TextBox As TextBox
     Friend WithEvents Label2 As Label
     Friend WithEvents Label1 As Label
     Friend WithEvents Timer1 As Timer
@@ -289,4 +314,7 @@ Partial Class HVACSmartHomeController
     Friend WithEvents TempLowIncreaseButton As Button
     Friend WithEvents TempHighDecreaseButton As Button
     Friend WithEvents TempHighIncreaseButton As Button
+    Friend WithEvents ModeTextBox As TextBox
+    Friend WithEvents ErrorTextBox As TextBox
+    Friend WithEvents Timer2 As Timer
 End Class

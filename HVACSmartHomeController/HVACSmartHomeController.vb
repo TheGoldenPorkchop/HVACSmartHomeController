@@ -52,8 +52,12 @@ Public Class HVACSmartHomeController
     Private Function SeperateNumberFromSymbol(Value As String) As Double
         Dim num As String()
         num = Split(Value, "°")
-        Dim Number As Double = CDbl(num(0))
-        Return Number
+        If num(0) = "" Then
+            Return 0
+        Else
+            Dim Number As Double = CDbl(num(0))
+            Return Number
+        End If
     End Function
 
     'Event Handlers---------------------------------------------------------------------------
@@ -65,17 +69,28 @@ Public Class HVACSmartHomeController
             MsgBox("Connect your Qy@ Board")
         End Try
         Timer1.Start()
+        Timer2.Start()
     End Sub
-
-    Dim readData As Boolean
 
     Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
         QyatRead()
+        If SeperateNumberFromSymbol(Analog1TextBox.Text) > SeperateNumberFromSymbol(TempHighTextBox.Text) Then
+            Analog1TextBox.ForeColor = Color.Red
+            ModeTextBox.Text = "AC"
+        ElseIf SeperateNumberFromSymbol(Analog1TextBox.Text) < SeperateNumberFromSymbol(TempLowTextBox.Text) Then
+            Analog1TextBox.ForeColor = Color.Blue
+            ModeTextBox.Text = "Heating"
+        Else
+            Analog1TextBox.ForeColor = Color.Black
+            ModeTextBox.Text = "Off"
+        End If
 
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles ConnectButton.Click
         Timer1.Start()
+        'ModeTextBox.Text
+
     End Sub
 
     Private Sub SerialPort1_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles SerialPort1.DataReceived
@@ -95,8 +110,8 @@ Public Class HVACSmartHomeController
                 Static oldX As Integer = XCoordinate
                 Static oldY As Integer = YCoordinate
 
-                XAnalogTextBox.Text = CStr(XCoordinate)
-                YAnalogTextBox.Text = CStr(YCoordinate)
+                Analog1TextBox.Text = CStr(XCoordinate)
+                Analog2TextBox.Text = CStr(YCoordinate)
 
                 buttonsData = CInt(buffer(4))
 
@@ -162,6 +177,24 @@ Public Class HVACSmartHomeController
             TempHighTextBox.Text = "90°"
         Else
             TempHighTextBox.Text = CStr(highTemp) + "°"
+        End If
+    End Sub
+
+    Private Sub Timer2_Tick(sender As Object, e As EventArgs) Handles Timer2.Tick
+        If ModeTextBox.Text = "Heating" Then
+            If SeperateNumberFromSymbol(Analog2TextBox.Text) > SeperateNumberFromSymbol(Analog1TextBox.Text) Then
+                ErrorTextBox.Text = "All Good"
+            Else
+                ErrorTextBox.Text = "Aw Dang It"
+            End If
+        ElseIf ModeTextBox.Text = "AC" Then
+            If SeperateNumberFromSymbol(Analog2TextBox.Text) < SeperateNumberFromSymbol(Analog1TextBox.Text) Then
+                ErrorTextBox.Text = "All Good"
+            Else
+                ErrorTextBox.Text = "Aw Dang It"
+            End If
+        Else
+            ErrorTextBox.Text = "Neutral"
         End If
     End Sub
 End Class
