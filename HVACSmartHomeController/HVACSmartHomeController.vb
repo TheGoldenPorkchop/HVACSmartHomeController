@@ -73,17 +73,33 @@ Public Class HVACSmartHomeController
     End Sub
 
     Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
+        Dim safetyInterlockSwitch As Boolean = False
         QyatRead()
-        If SeperateNumberFromSymbol(Analog1TextBox.Text) > SeperateNumberFromSymbol(TempHighTextBox.Text) Then
-            Analog1TextBox.ForeColor = Color.Red
-            ModeTextBox.Text = "AC"
-        ElseIf SeperateNumberFromSymbol(Analog1TextBox.Text) < SeperateNumberFromSymbol(TempLowTextBox.Text) Then
-            Analog1TextBox.ForeColor = Color.Blue
-            ModeTextBox.Text = "Heating"
+
+        If ButtonsTextBox.Text IsNot "" Then
+            If CInt(ButtonsTextBox.Text) Mod 2 = 0 Then
+                safetyInterlockSwitch = False 'low
+            Else
+                safetyInterlockSwitch = True 'high
+            End If
+        End If
+
+        If safetyInterlockSwitch = True Then
+            If SeperateNumberFromSymbol(Analog1TextBox.Text) > SeperateNumberFromSymbol(TempHighTextBox.Text) Then
+                Analog1TextBox.ForeColor = Color.Red
+                ModeTextBox.Text = "AC"
+            ElseIf SeperateNumberFromSymbol(Analog1TextBox.Text) < SeperateNumberFromSymbol(TempLowTextBox.Text) Then
+                Analog1TextBox.ForeColor = Color.Blue
+                ModeTextBox.Text = "Heating"
+            Else
+                Analog1TextBox.ForeColor = Color.Black
+                ModeTextBox.Text = "Off"
+            End If
         Else
             Analog1TextBox.ForeColor = Color.Black
-            ModeTextBox.Text = "Off"
+            ModeTextBox.Text = "Locked Off"
         End If
+
 
     End Sub
 
