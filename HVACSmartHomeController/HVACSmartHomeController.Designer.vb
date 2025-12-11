@@ -35,7 +35,7 @@ Partial Class HVACSmartHomeController
         Me.Analog2TextBox = New System.Windows.Forms.TextBox()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
-        Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
+        Me.Timer10ms = New System.Windows.Forms.Timer(Me.components)
         Me.TempHighTextBox = New System.Windows.Forms.TextBox()
         Me.TempLowTextBox = New System.Windows.Forms.TextBox()
         Me.Label5 = New System.Windows.Forms.Label()
@@ -46,7 +46,9 @@ Partial Class HVACSmartHomeController
         Me.TempHighIncreaseButton = New System.Windows.Forms.Button()
         Me.ModeTextBox = New System.Windows.Forms.TextBox()
         Me.ErrorTextBox = New System.Windows.Forms.TextBox()
-        Me.Timer2 = New System.Windows.Forms.Timer(Me.components)
+        Me.Timer30s = New System.Windows.Forms.Timer(Me.components)
+        Me.Timer5s = New System.Windows.Forms.Timer(Me.components)
+        Me.FanTextBox = New System.Windows.Forms.TextBox()
         Me.AnalogCoordsGroupBox.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -172,9 +174,9 @@ Partial Class HVACSmartHomeController
         Me.Label1.TabIndex = 11
         Me.Label1.Text = "X"
         '
-        'Timer1
+        'Timer10ms
         '
-        Me.Timer1.Interval = 10
+        Me.Timer10ms.Interval = 10
         '
         'TempHighTextBox
         '
@@ -264,15 +266,28 @@ Partial Class HVACSmartHomeController
         Me.ErrorTextBox.Size = New System.Drawing.Size(100, 22)
         Me.ErrorTextBox.TabIndex = 27
         '
-        'Timer2
+        'Timer30s
         '
-        Me.Timer2.Interval = 90000
+        Me.Timer30s.Interval = 90000
+        '
+        'Timer5s
+        '
+        Me.Timer5s.Interval = 5000
+        '
+        'FanTextBox
+        '
+        Me.FanTextBox.Location = New System.Drawing.Point(335, 269)
+        Me.FanTextBox.Name = "FanTextBox"
+        Me.FanTextBox.ReadOnly = True
+        Me.FanTextBox.Size = New System.Drawing.Size(100, 22)
+        Me.FanTextBox.TabIndex = 28
         '
         'HVACSmartHomeController
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(800, 450)
+        Me.Controls.Add(Me.FanTextBox)
         Me.Controls.Add(Me.ErrorTextBox)
         Me.Controls.Add(Me.ModeTextBox)
         Me.Controls.Add(Me.TempHighIncreaseButton)
@@ -301,7 +316,7 @@ Partial Class HVACSmartHomeController
     Friend WithEvents Analog2TextBox As TextBox
     Friend WithEvents Label2 As Label
     Friend WithEvents Label1 As Label
-    Friend WithEvents Timer1 As Timer
+    Friend WithEvents Timer10ms As Timer
     Friend WithEvents Label4 As Label
     Friend WithEvents ButtonsTextBox As TextBox
     Friend WithEvents ConnectButton As Button
@@ -316,5 +331,7 @@ Partial Class HVACSmartHomeController
     Friend WithEvents TempHighIncreaseButton As Button
     Friend WithEvents ModeTextBox As TextBox
     Friend WithEvents ErrorTextBox As TextBox
-    Friend WithEvents Timer2 As Timer
+    Friend WithEvents Timer30s As Timer
+    Friend WithEvents Timer5s As Timer
+    Friend WithEvents FanTextBox As TextBox
 End Class

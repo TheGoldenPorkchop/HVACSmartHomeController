@@ -68,51 +68,15 @@ Public Class HVACSmartHomeController
         Catch ex As Exception
             MsgBox("Connect your Qy@ Board")
         End Try
-        Timer1.Start()
-        Timer2.Start()
+        Timer10ms.Start()
+        Timer30s.Start()
     End Sub
-
-    Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
-        Dim safetyInterlockSwitch As Boolean = False
-        QyatRead()
-
-        If ButtonsTextBox.Text IsNot "" Then
-            If CInt(ButtonsTextBox.Text) Mod 2 = 0 Then
-                safetyInterlockSwitch = False 'low
-            Else
-                safetyInterlockSwitch = True 'high
-            End If
-        End If
-
-        If safetyInterlockSwitch = True Then
-            If SeperateNumberFromSymbol(Analog1TextBox.Text) > SeperateNumberFromSymbol(TempHighTextBox.Text) Then
-                Analog1TextBox.ForeColor = Color.Red
-                ModeTextBox.Text = "AC"
-            ElseIf SeperateNumberFromSymbol(Analog1TextBox.Text) < SeperateNumberFromSymbol(TempLowTextBox.Text) Then
-                Analog1TextBox.ForeColor = Color.Blue
-                ModeTextBox.Text = "Heating"
-            Else
-                Analog1TextBox.ForeColor = Color.Black
-                ModeTextBox.Text = "Off"
-            End If
-        Else
-            Analog1TextBox.ForeColor = Color.Black
-            ModeTextBox.Text = "Locked Off"
-        End If
-
-
-    End Sub
-
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles ConnectButton.Click
-        Timer1.Start()
-        'ModeTextBox.Text
-
+        'test
     End Sub
-
     Private Sub SerialPort1_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles SerialPort1.DataReceived
         CheckForIllegalCrossThreadCalls = False
         Dim numberOfBytes = SerialPort1.BytesToRead
-
         Dim buffer(numberOfBytes - 1) As Byte
         Dim got As Integer = SerialPort1.Read(buffer, 0, numberOfBytes)
         Dim XCoordinate As Integer
@@ -122,20 +86,14 @@ Public Class HVACSmartHomeController
             If buffer.Length >= 5 Then
                 XCoordinate = CInt((buffer(0) * 0.234375) + 40)
                 YCoordinate = CInt((buffer(2) * 0.234375) + 40)
-
                 Static oldX As Integer = XCoordinate
                 Static oldY As Integer = YCoordinate
-
                 Analog1TextBox.Text = CStr(XCoordinate)
                 Analog2TextBox.Text = CStr(YCoordinate)
-
                 buttonsData = CInt(buffer(4))
-
                 ButtonsTextBox.Text = CStr(buttonsData)
-
                 oldX = XCoordinate
                 oldY = YCoordinate
-
                 ByteTextBox.Text = buffer(0).ToString + " & " + buffer(1).ToString + " & " + buffer(2).ToString + " & " + buffer(3).ToString + " & " + buffer(4).ToString
             End If
         End If
@@ -154,7 +112,6 @@ Public Class HVACSmartHomeController
             TempLowTextBox.Text = CStr(lowTemp) + "°"
         End If
     End Sub
-
     Private Sub TempLowIncreaseButton_Click(sender As Object, e As EventArgs) Handles TempLowIncreaseButton.Click
         Dim lowTemp As Double = 90
         lowTemp = SeperateNumberFromSymbol(TempLowTextBox.Text)
@@ -169,7 +126,6 @@ Public Class HVACSmartHomeController
             End If
         End If
     End Sub
-
     Private Sub TempHighDecreaseButton_Click(sender As Object, e As EventArgs) Handles TempHighDecreaseButton.Click
         Dim highTemp As Double = 50
         highTemp = SeperateNumberFromSymbol(TempHighTextBox.Text)
@@ -184,7 +140,6 @@ Public Class HVACSmartHomeController
             End If
         End If
     End Sub
-
     Private Sub TempHighIncreaseButton_Click(sender As Object, e As EventArgs) Handles TempHighIncreaseButton.Click
         Dim highTemp As Double = 90
         highTemp = SeperateNumberFromSymbol(TempHighTextBox.Text)
@@ -196,7 +151,45 @@ Public Class HVACSmartHomeController
         End If
     End Sub
 
-    Private Sub Timer2_Tick(sender As Object, e As EventArgs) Handles Timer2.Tick
+    Private Sub Timer10ms_Tick(sender As Object, e As EventArgs) Handles Timer10ms.Tick
+        Dim safetyInterlockSwitch As Boolean = True
+        Dim fan As Boolean = False
+        Dim data(1) As Byte 'put bytes into an array
+        data(0) = &H20 'Writes to the Digital Output
+        QyatRead()
+        If ButtonsTextBox.Text IsNot "" Then
+            If CInt(ButtonsTextBox.Text) Mod 2 = 0 Then
+                safetyInterlockSwitch = False 'low
+            Else
+                safetyInterlockSwitch = True 'high
+            End If
+
+        End If
+        If safetyInterlockSwitch = True Then
+            If SeperateNumberFromSymbol(Analog1TextBox.Text) > SeperateNumberFromSymbol(TempHighTextBox.Text) Then
+                data(1) = &H8 'Fan is on
+                SerialPort1.Write(data, 0, 2) 'Fan is on
+                FanTextBox.Text = "Fan is On"
+                Timer5s.Start()
+            ElseIf SeperateNumberFromSymbol(Analog1TextBox.Text) < SeperateNumberFromSymbol(TempLowTextBox.Text) Then
+                data(1) = &H8 'Fan is on
+                SerialPort1.Write(data, 0, 2) 'Fan is on
+                FanTextBox.Text = "Fan is On"
+                Timer5s.Start()
+            Else
+                Analog1TextBox.ForeColor = Color.Black
+                Timer5s.Start()
+            End If
+        Else
+            Analog1TextBox.ForeColor = Color.Black
+            ModeTextBox.Text = "Locked Off"
+            data(0) = &H20 'Writes to the Digital Output
+            data(1) = &H1 'Safety Lock
+            SerialPort1.Write(data, 0, 2) 'Fan is off
+        End If
+    End Sub
+
+    Private Sub Timer30s_Tick(sender As Object, e As EventArgs) Handles Timer30s.Tick
         If ModeTextBox.Text = "Heating" Then
             If SeperateNumberFromSymbol(Analog2TextBox.Text) > SeperateNumberFromSymbol(Analog1TextBox.Text) Then
                 ErrorTextBox.Text = "All Good"
@@ -212,5 +205,25 @@ Public Class HVACSmartHomeController
         Else
             ErrorTextBox.Text = "Neutral"
         End If
+    End Sub
+
+    Private Sub Timer5s_Tick(sender As Object, e As EventArgs) Handles Timer5s.Tick
+        Dim data(1) As Byte 'put bytes into an array
+        data(0) = &H20 'Writes to the Digital Output
+
+        If SeperateNumberFromSymbol(Analog1TextBox.Text) > SeperateNumberFromSymbol(TempHighTextBox.Text) Then
+            Analog1TextBox.ForeColor = Color.Red
+            ModeTextBox.Text = "AC"
+        ElseIf SeperateNumberFromSymbol(Analog1TextBox.Text) < SeperateNumberFromSymbol(TempLowTextBox.Text) Then
+            Analog1TextBox.ForeColor = Color.Blue
+            ModeTextBox.Text = "Heating"
+        Else
+            Analog1TextBox.ForeColor = Color.Black
+            ModeTextBox.Text = "Off"
+            data(1) = &H0 'Fan is off
+            SerialPort1.Write(data, 0, 2) 'Fan is on
+            FanTextBox.Text = "Fan is Off"
+        End If
+        Timer5s.Stop()
     End Sub
 End Class
