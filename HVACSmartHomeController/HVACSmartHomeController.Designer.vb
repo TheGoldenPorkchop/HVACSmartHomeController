@@ -49,6 +49,8 @@ Partial Class HVACSmartHomeController
         Me.Timer30s = New System.Windows.Forms.Timer(Me.components)
         Me.Timer5s = New System.Windows.Forms.Timer(Me.components)
         Me.FanTextBox = New System.Windows.Forms.TextBox()
+        Me.TestTextBox = New System.Windows.Forms.TextBox()
+        Me.Timerforbutton25 = New System.Windows.Forms.Timer(Me.components)
         Me.AnalogCoordsGroupBox.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -282,11 +284,24 @@ Partial Class HVACSmartHomeController
         Me.FanTextBox.Size = New System.Drawing.Size(100, 22)
         Me.FanTextBox.TabIndex = 28
         '
+        'TestTextBox
+        '
+        Me.TestTextBox.Location = New System.Drawing.Point(441, 269)
+        Me.TestTextBox.Name = "TestTextBox"
+        Me.TestTextBox.ReadOnly = True
+        Me.TestTextBox.Size = New System.Drawing.Size(100, 22)
+        Me.TestTextBox.TabIndex = 29
+        '
+        'Timerforbutton25
+        '
+        Me.Timerforbutton25.Interval = 5000
+        '
         'HVACSmartHomeController
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(800, 450)
+        Me.Controls.Add(Me.TestTextBox)
         Me.Controls.Add(Me.FanTextBox)
         Me.Controls.Add(Me.ErrorTextBox)
         Me.Controls.Add(Me.ModeTextBox)
@@ -334,4 +349,6 @@ Partial Class HVACSmartHomeController
     Friend WithEvents Timer30s As Timer
     Friend WithEvents Timer5s As Timer
     Friend WithEvents FanTextBox As TextBox
+    Friend WithEvents TestTextBox As TextBox
+    Friend WithEvents Timerforbutton25 As Timer
 End Class
