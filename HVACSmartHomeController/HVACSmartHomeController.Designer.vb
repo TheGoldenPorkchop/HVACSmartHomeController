@@ -57,7 +57,7 @@ Partial Class HVACSmartHomeController
         Me.Label11 = New System.Windows.Forms.Label()
         Me.FaultTextBox = New System.Windows.Forms.TextBox()
         Me.ExitButton = New System.Windows.Forms.Button()
-        Me.ManualControlFanOffTimer = New System.Windows.Forms.Timer(Me.components)
+        Me.Timer5sBootUp = New System.Windows.Forms.Timer(Me.components)
         Me.AnalogCoordsGroupBox.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -278,7 +278,7 @@ Partial Class HVACSmartHomeController
         '
         Me.ModeTextBox.Location = New System.Drawing.Point(413, 75)
         Me.ModeTextBox.Name = "ModeTextBox"
-        Me.ModeTextBox.Size = New System.Drawing.Size(100, 22)
+        Me.ModeTextBox.Size = New System.Drawing.Size(146, 22)
         Me.ModeTextBox.TabIndex = 27
         '
         'FanModeTextBox
@@ -357,8 +357,9 @@ Partial Class HVACSmartHomeController
         Me.ExitButton.Text = "E&xit"
         Me.ExitButton.UseVisualStyleBackColor = True
         '
-        'ManualControlFanOffTimer
+        'Timer5sBootUp
         '
+        Me.Timer5sBootUp.Interval = 5000
         '
         'HVACSmartHomeController
         '
@@ -428,5 +429,5 @@ Partial Class HVACSmartHomeController
     Friend WithEvents Label11 As Label
     Friend WithEvents FaultTextBox As TextBox
     Friend WithEvents ExitButton As Button
-    Friend WithEvents ManualControlFanOffTimer As Timer
+    Friend WithEvents Timer5sBootUp As Timer
 End Class

@@ -158,9 +158,11 @@ Public Class HVACSmartHomeController
     Dim manualControl As Boolean = False
     Dim hasManualHeatEnded As Boolean = False
     Dim hasManualCoolEnded As Boolean = False
+    Dim hasOnFanEnded As Boolean = False
 
     Private Sub Timer10ms_Tick(sender As Object, e As EventArgs) Handles Timer10ms.Tick
-        Dim safetyInterlockSwitch As Boolean = True
+        Dim safetyLockTemp As Boolean = False
+        Dim pressureLockTemp As Boolean = False
         Dim fan As Boolean = False
         Dim data(1) As Byte 'put bytes into an array
         data(0) = &H20 'Writes to the Digital Output
@@ -169,14 +171,14 @@ Public Class HVACSmartHomeController
 
             'Safety interlock switch
             If CInt(ButtonsTextBox.Text) Mod 2 = 0 Then
-                safetyInterlockSwitch = False 'low
+                safetyLockTemp = True 'low
             Else
-                safetyInterlockSwitch = True 'high
+                safetyLockTemp = False 'high
             End If
 
             'Heating Control
             If CInt(ButtonsTextBox.Text) Mod 4 < 2 Or CInt(ButtonsTextBox.Text) Mod 4 = 1 Then
-                If safetyInterlockSwitch = True Then
+                If safetyLockTemp = False And pressureLockTemp = False Then
                     data(1) = &H8 'Fan is on
                     SerialPort1.Write(data, 0, 2) 'Fan is on
                     FanStatusTextBox.Text = "On"
@@ -187,46 +189,47 @@ Public Class HVACSmartHomeController
             Else
                 heatingControl = False
                 If hasManualHeatEnded = False Then
-                    'FanStatusTextBox.Text = "OFFH"
                     Timer5s.Start()
                     hasManualHeatEnded = True
                 End If
             End If
 
-                'Fan-only mode
-                If CInt(ButtonsTextBox.Text) Mod 8 < 4 Then
-
-                'TestTextBox.Text = "YES"
+            'Fan-only mode
+            If CInt(ButtonsTextBox.Text) Mod 8 < 4 Then
+                data(1) = &H8 'Fan is on
+                SerialPort1.Write(data, 0, 2) 'Fan is on
+                FanStatusTextBox.Text = "On"
+                hasOnFanEnded = False
             Else
-
-                'TestTextBox.Text = "nope"
+                If hasOnFanEnded = False Then
+                    data(1) = &H0 'Fan is off
+                    SerialPort1.Write(data, 0, 2) 'Fan is off
+                    FanStatusTextBox.Text = "Off"
+                    hasOnFanEnded = True
+                End If
             End If
 
             'Differential pressure sensor
             If CInt(ButtonsTextBox.Text) Mod 16 < 8 Then
-
-                'TestTextBox.Text = "YES"
+                pressureLockTemp = True
+                FaultTextBox.Text = "Pressure Sensore oof"
             Else
-
-                'TestTextBox.Text = "nope"
+                pressureLockTemp = False
             End If
 
             'Cooling control
             If CInt(ButtonsTextBox.Text) Mod 32 < 16 Then
-                If safetyInterlockSwitch = True Then
-                    If coolingControl = False Then
-                        data(1) = &H8 'Fan is on
-                        SerialPort1.Write(data, 0, 2) 'Fan is on
-                        FanStatusTextBox.Text = "On"
-                        ManualControlTimer.Start()
-                        coolingControl = True
-                        hasManualCoolEnded = False
-                    End If
+                If safetyLockTemp = False And pressureLockTemp = False Then
+                    data(1) = &H8 'Fan is on
+                    SerialPort1.Write(data, 0, 2) 'Fan is on
+                    FanStatusTextBox.Text = "On"
+                    ManualControlTimer.Start()
+                    coolingControl = True
+                    hasManualCoolEnded = False
                 End If
             Else
                 coolingControl = False
                 If hasManualCoolEnded = False Then
-                    'FanStatusTextBox.Text = "OFFC"
                     Timer5s.Start()
                     hasManualCoolEnded = True
                 End If
@@ -237,7 +240,7 @@ Public Class HVACSmartHomeController
             End If
 
         End If
-        If safetyInterlockSwitch = True Then
+        If safetyLockTemp = False And pressureLockTemp = False Then
             If coolingControl = False And heatingControl = False Then
                 If hysteresisStart = False Then
                     If SeperateNumberFromSymbol(RoomTempTextBox.Text) > SeperateNumberFromSymbol(TempHighTextBox.Text) Then
@@ -275,10 +278,8 @@ Public Class HVACSmartHomeController
                     End If
                 End If
             End If
-
-
         Else
-            'ModeTextBox.Text = "Locked Off"
+            ModeTextBox.Text = "Safety Locked"
             data(0) = &H20 'Writes to the Digital Output
             data(1) = &H1 'Safety Lock
             SerialPort1.Write(data, 0, 2) 'Fan is off
@@ -331,4 +332,7 @@ Public Class HVACSmartHomeController
         Me.Close()
     End Sub
 
+    Private Sub Timer5sBootUp_Tick(sender As Object, e As EventArgs) Handles Timer5sBootUp.Tick
+
+    End Sub
 End Class
