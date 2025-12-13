@@ -154,9 +154,10 @@ Public Class HVACSmartHomeController
 
     Dim heatingControl As Boolean = False
     Dim coolingControl As Boolean = False
-    Dim hysteresisCoolingDone As Boolean = False
-    Dim hysteresisHeatingDone As Boolean = False
     Dim hysteresisStart As Boolean = False
+    Dim manualControl As Boolean = False
+    Dim hasManualHeatEnded As Boolean = False
+    Dim hasManualCoolEnded As Boolean = False
 
     Private Sub Timer10ms_Tick(sender As Object, e As EventArgs) Handles Timer10ms.Tick
         Dim safetyInterlockSwitch As Boolean = True
@@ -181,14 +182,19 @@ Public Class HVACSmartHomeController
                     FanStatusTextBox.Text = "On"
                     ManualControlTimer.Start()
                     heatingControl = True
+                    hasManualHeatEnded = False
                 End If
             Else
                 heatingControl = False
-                'TestTextBox.Text = "nope"
+                If hasManualHeatEnded = False Then
+                    'FanStatusTextBox.Text = "OFFH"
+                    Timer5s.Start()
+                    hasManualHeatEnded = True
+                End If
             End If
 
-            'Fan-only mode
-            If CInt(ButtonsTextBox.Text) Mod 8 < 4 Then
+                'Fan-only mode
+                If CInt(ButtonsTextBox.Text) Mod 8 < 4 Then
 
                 'TestTextBox.Text = "YES"
             Else
@@ -214,12 +220,16 @@ Public Class HVACSmartHomeController
                         FanStatusTextBox.Text = "On"
                         ManualControlTimer.Start()
                         coolingControl = True
+                        hasManualCoolEnded = False
                     End If
                 End If
-                'TestTextBox.Text = "YES"
             Else
                 coolingControl = False
-                'TestTextBox.Text = "nope"
+                If hasManualCoolEnded = False Then
+                    'FanStatusTextBox.Text = "OFFC"
+                    Timer5s.Start()
+                    hasManualCoolEnded = True
+                End If
             End If
 
             If CInt(ButtonsTextBox.Text) = 255 Then
@@ -228,46 +238,46 @@ Public Class HVACSmartHomeController
 
         End If
         If safetyInterlockSwitch = True Then
-            If hysteresisStart = False Then
-                If SeperateNumberFromSymbol(RoomTempTextBox.Text) > SeperateNumberFromSymbol(TempHighTextBox.Text) Then
-                    data(1) = &H8 'Fan is on
-                    SerialPort1.Write(data, 0, 2) 'Fan is on
-                    FanStatusTextBox.Text = "On"
-                    ModeTextBox.Text = "Cooling"
-                    hysteresisStart = True
-                    'Timer5s.Start()
-                ElseIf SeperateNumberFromSymbol(RoomTempTextBox.Text) < SeperateNumberFromSymbol(TempLowTextBox.Text) Then
-                    data(1) = &H8 'Fan is on
-                    SerialPort1.Write(data, 0, 2) 'Fan is on
-                    FanStatusTextBox.Text = "On"
-                    ModeTextBox.Text = "Heating"
-                    hysteresisStart = True
-                    'Timer5s.Start()
+            If coolingControl = False And heatingControl = False Then
+                If hysteresisStart = False Then
+                    If SeperateNumberFromSymbol(RoomTempTextBox.Text) > SeperateNumberFromSymbol(TempHighTextBox.Text) Then
+                        data(1) = &H8 'Fan is on
+                        SerialPort1.Write(data, 0, 2) 'Fan is on
+                        FanStatusTextBox.Text = "On"
+                        ModeTextBox.Text = "Cooling"
+                        hysteresisStart = True
+                    ElseIf SeperateNumberFromSymbol(RoomTempTextBox.Text) < SeperateNumberFromSymbol(TempLowTextBox.Text) Then
+                        data(1) = &H8 'Fan is on
+                        SerialPort1.Write(data, 0, 2) 'Fan is on
+                        FanStatusTextBox.Text = "On"
+                        ModeTextBox.Text = "Heating"
+                        hysteresisStart = True
+                    Else
+                        ModeTextBox.Text = "Off"
+                    End If
                 Else
-                    ModeTextBox.Text = "Off"
-                End If
-            Else
-                If SeperateNumberFromSymbol(RoomTempTextBox.Text) > (SeperateNumberFromSymbol(TempHighTextBox.Text) - 2) Then
-                    data(1) = &H8 'Fan is on
-                    SerialPort1.Write(data, 0, 2) 'Fan is on
-                    FanStatusTextBox.Text = "On"
-                    ModeTextBox.Text = "Cooling"
-                ElseIf SeperateNumberFromSymbol(RoomTempTextBox.Text) < (SeperateNumberFromSymbol(TempLowTextBox.Text) + 2) Then
-                    data(1) = &H8 'Fan is on
-                    SerialPort1.Write(data, 0, 2) 'Fan is on
-                    FanStatusTextBox.Text = "On"
-                    ModeTextBox.Text = "Heating"
-                Else
-                    data(1) = &H0 'Fan is on
-                    SerialPort1.Write(data, 0, 2) 'Fan is on
-                    ModeTextBox.Text = "Off"
-                    hysteresisStart = False
-                    Timer5s.Start()
+                    If SeperateNumberFromSymbol(RoomTempTextBox.Text) > (SeperateNumberFromSymbol(TempHighTextBox.Text) - 2) Then
+                        data(1) = &H8 'Fan is on
+                        SerialPort1.Write(data, 0, 2) 'Fan is on
+                        FanStatusTextBox.Text = "On"
+                        ModeTextBox.Text = "Cooling"
+                    ElseIf SeperateNumberFromSymbol(RoomTempTextBox.Text) < (SeperateNumberFromSymbol(TempLowTextBox.Text) + 2) Then
+                        data(1) = &H8 'Fan is on
+                        SerialPort1.Write(data, 0, 2) 'Fan is on
+                        FanStatusTextBox.Text = "On"
+                        ModeTextBox.Text = "Heating"
+                    Else
+                        data(1) = &H0 'Fan is on
+                        SerialPort1.Write(data, 0, 2) 'Fan is on
+                        ModeTextBox.Text = "Off"
+                        hysteresisStart = False
+                        Timer5s.Start()
+                    End If
                 End If
             End If
 
+
         Else
-            RoomTempTextBox.ForeColor = Color.Black
             'ModeTextBox.Text = "Locked Off"
             data(0) = &H20 'Writes to the Digital Output
             data(1) = &H1 'Safety Lock
@@ -289,7 +299,7 @@ Public Class HVACSmartHomeController
                 FaultTextBox.Text = "Aw Dang It"
             End If
         Else
-            FaultTextBox.Text = "Neutral"
+            FaultTextBox.Text = "All good Neutral"
         End If
     End Sub
 
@@ -306,14 +316,19 @@ Public Class HVACSmartHomeController
 
     Private Sub ManualControlTimer_Tick(sender As Object, e As EventArgs) Handles ManualControlTimer.Tick
         If heatingControl = True Then
-            ModeTextBox.Text = "Heating Yeah"
+            ModeTextBox.Text = "Manual Heating"
         Else
             If coolingControl = True Then
-                ModeTextBox.Text = "Cooling Yeah"
+                ModeTextBox.Text = "Manual Cooling"
             Else
-
+                ModeTextBox.Text = "ermm..."
             End If
         End If
+        ManualControlTimer.Stop()
+    End Sub
+
+    Private Sub ExitButton_Click(sender As Object, e As EventArgs) Handles ExitButton.Click
+        Me.Close()
     End Sub
 
 End Class
