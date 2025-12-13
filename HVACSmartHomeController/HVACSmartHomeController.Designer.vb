@@ -31,10 +31,10 @@ Partial Class HVACSmartHomeController
         Me.ConnectButton = New System.Windows.Forms.Button()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.ButtonsTextBox = New System.Windows.Forms.TextBox()
-        Me.Analog1TextBox = New System.Windows.Forms.TextBox()
-        Me.Analog2TextBox = New System.Windows.Forms.TextBox()
+        Me.MachineTempTextBox = New System.Windows.Forms.TextBox()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
+        Me.RoomTempTextBox = New System.Windows.Forms.TextBox()
         Me.Timer10ms = New System.Windows.Forms.Timer(Me.components)
         Me.TempHighTextBox = New System.Windows.Forms.TextBox()
         Me.TempLowTextBox = New System.Windows.Forms.TextBox()
@@ -44,13 +44,18 @@ Partial Class HVACSmartHomeController
         Me.TempLowIncreaseButton = New System.Windows.Forms.Button()
         Me.TempHighDecreaseButton = New System.Windows.Forms.Button()
         Me.TempHighIncreaseButton = New System.Windows.Forms.Button()
-        Me.ModeTextBox = New System.Windows.Forms.TextBox()
-        Me.ErrorTextBox = New System.Windows.Forms.TextBox()
         Me.Timer30s = New System.Windows.Forms.Timer(Me.components)
         Me.Timer5s = New System.Windows.Forms.Timer(Me.components)
-        Me.FanTextBox = New System.Windows.Forms.TextBox()
-        Me.TestTextBox = New System.Windows.Forms.TextBox()
-        Me.Timerforbutton25 = New System.Windows.Forms.Timer(Me.components)
+        Me.ManualControlTimer = New System.Windows.Forms.Timer(Me.components)
+        Me.ModeTextBox = New System.Windows.Forms.TextBox()
+        Me.FanModeTextBox = New System.Windows.Forms.TextBox()
+        Me.Label7 = New System.Windows.Forms.Label()
+        Me.Label8 = New System.Windows.Forms.Label()
+        Me.Label9 = New System.Windows.Forms.Label()
+        Me.Label10 = New System.Windows.Forms.Label()
+        Me.FanStatusTextBox = New System.Windows.Forms.TextBox()
+        Me.Label11 = New System.Windows.Forms.Label()
+        Me.FaultTextBox = New System.Windows.Forms.TextBox()
         Me.AnalogCoordsGroupBox.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -85,9 +90,8 @@ Partial Class HVACSmartHomeController
         Me.AnalogCoordsGroupBox.Controls.Add(Me.Label4)
         Me.AnalogCoordsGroupBox.Controls.Add(Me.ButtonsTextBox)
         Me.AnalogCoordsGroupBox.Controls.Add(Me.Label3)
-        Me.AnalogCoordsGroupBox.Controls.Add(Me.Analog1TextBox)
         Me.AnalogCoordsGroupBox.Controls.Add(Me.PortsComboBox)
-        Me.AnalogCoordsGroupBox.Controls.Add(Me.Analog2TextBox)
+        Me.AnalogCoordsGroupBox.Controls.Add(Me.MachineTempTextBox)
         Me.AnalogCoordsGroupBox.Controls.Add(Me.Label2)
         Me.AnalogCoordsGroupBox.Controls.Add(Me.Label1)
         Me.AnalogCoordsGroupBox.Location = New System.Drawing.Point(12, 327)
@@ -132,25 +136,16 @@ Partial Class HVACSmartHomeController
         Me.ButtonsTextBox.Size = New System.Drawing.Size(66, 22)
         Me.ButtonsTextBox.TabIndex = 13
         '
-        'Analog1TextBox
+        'MachineTempTextBox
         '
-        Me.Analog1TextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+        Me.MachineTempTextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.Analog1TextBox.Location = New System.Drawing.Point(217, 39)
-        Me.Analog1TextBox.Name = "Analog1TextBox"
-        Me.Analog1TextBox.ReadOnly = True
-        Me.Analog1TextBox.Size = New System.Drawing.Size(66, 22)
-        Me.Analog1TextBox.TabIndex = 9
-        '
-        'Analog2TextBox
-        '
-        Me.Analog2TextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.Analog2TextBox.Location = New System.Drawing.Point(217, 66)
-        Me.Analog2TextBox.Name = "Analog2TextBox"
-        Me.Analog2TextBox.ReadOnly = True
-        Me.Analog2TextBox.Size = New System.Drawing.Size(66, 22)
-        Me.Analog2TextBox.TabIndex = 10
+        Me.MachineTempTextBox.Location = New System.Drawing.Point(217, 66)
+        Me.MachineTempTextBox.Name = "MachineTempTextBox"
+        Me.MachineTempTextBox.ReadOnly = True
+        Me.MachineTempTextBox.Size = New System.Drawing.Size(66, 22)
+        Me.MachineTempTextBox.TabIndex = 10
+        Me.MachineTempTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
         'Label2
         '
@@ -176,18 +171,30 @@ Partial Class HVACSmartHomeController
         Me.Label1.TabIndex = 11
         Me.Label1.Text = "X"
         '
+        'RoomTempTextBox
+        '
+        Me.RoomTempTextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.RoomTempTextBox.Location = New System.Drawing.Point(102, 241)
+        Me.RoomTempTextBox.Name = "RoomTempTextBox"
+        Me.RoomTempTextBox.ReadOnly = True
+        Me.RoomTempTextBox.Size = New System.Drawing.Size(66, 22)
+        Me.RoomTempTextBox.TabIndex = 9
+        Me.RoomTempTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
         'Timer10ms
         '
         Me.Timer10ms.Interval = 10
         '
         'TempHighTextBox
         '
-        Me.TempHighTextBox.Location = New System.Drawing.Point(147, 241)
+        Me.TempHighTextBox.Location = New System.Drawing.Point(174, 241)
         Me.TempHighTextBox.Name = "TempHighTextBox"
         Me.TempHighTextBox.ReadOnly = True
         Me.TempHighTextBox.Size = New System.Drawing.Size(76, 22)
         Me.TempHighTextBox.TabIndex = 18
         Me.TempHighTextBox.Text = "90°"
+        Me.TempHighTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
         'TempLowTextBox
         '
@@ -197,6 +204,7 @@ Partial Class HVACSmartHomeController
         Me.TempLowTextBox.Size = New System.Drawing.Size(76, 22)
         Me.TempLowTextBox.TabIndex = 19
         Me.TempLowTextBox.Text = "50°"
+        Me.TempLowTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
         'Label5
         '
@@ -210,7 +218,7 @@ Partial Class HVACSmartHomeController
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(161, 222)
+        Me.Label6.Location = New System.Drawing.Point(188, 222)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(35, 16)
         Me.Label6.TabIndex = 21
@@ -236,7 +244,7 @@ Partial Class HVACSmartHomeController
         '
         'TempHighDecreaseButton
         '
-        Me.TempHighDecreaseButton.Location = New System.Drawing.Point(147, 269)
+        Me.TempHighDecreaseButton.Location = New System.Drawing.Point(174, 269)
         Me.TempHighDecreaseButton.Name = "TempHighDecreaseButton"
         Me.TempHighDecreaseButton.Size = New System.Drawing.Size(35, 34)
         Me.TempHighDecreaseButton.TabIndex = 24
@@ -245,65 +253,113 @@ Partial Class HVACSmartHomeController
         '
         'TempHighIncreaseButton
         '
-        Me.TempHighIncreaseButton.Location = New System.Drawing.Point(188, 269)
+        Me.TempHighIncreaseButton.Location = New System.Drawing.Point(215, 269)
         Me.TempHighIncreaseButton.Name = "TempHighIncreaseButton"
         Me.TempHighIncreaseButton.Size = New System.Drawing.Size(35, 34)
         Me.TempHighIncreaseButton.TabIndex = 25
         Me.TempHighIncreaseButton.Text = ">"
         Me.TempHighIncreaseButton.UseVisualStyleBackColor = True
         '
-        'ModeTextBox
-        '
-        Me.ModeTextBox.Location = New System.Drawing.Point(229, 241)
-        Me.ModeTextBox.Name = "ModeTextBox"
-        Me.ModeTextBox.ReadOnly = True
-        Me.ModeTextBox.Size = New System.Drawing.Size(100, 22)
-        Me.ModeTextBox.TabIndex = 26
-        '
-        'ErrorTextBox
-        '
-        Me.ErrorTextBox.Location = New System.Drawing.Point(229, 269)
-        Me.ErrorTextBox.Name = "ErrorTextBox"
-        Me.ErrorTextBox.ReadOnly = True
-        Me.ErrorTextBox.Size = New System.Drawing.Size(100, 22)
-        Me.ErrorTextBox.TabIndex = 27
-        '
         'Timer30s
         '
-        Me.Timer30s.Interval = 90000
+        Me.Timer30s.Interval = 30000
         '
         'Timer5s
         '
         Me.Timer5s.Interval = 5000
         '
-        'FanTextBox
+        'ManualControlTimer
         '
-        Me.FanTextBox.Location = New System.Drawing.Point(335, 269)
-        Me.FanTextBox.Name = "FanTextBox"
-        Me.FanTextBox.ReadOnly = True
-        Me.FanTextBox.Size = New System.Drawing.Size(100, 22)
-        Me.FanTextBox.TabIndex = 28
+        Me.ManualControlTimer.Interval = 5000
         '
-        'TestTextBox
+        'ModeTextBox
         '
-        Me.TestTextBox.Location = New System.Drawing.Point(441, 269)
-        Me.TestTextBox.Name = "TestTextBox"
-        Me.TestTextBox.ReadOnly = True
-        Me.TestTextBox.Size = New System.Drawing.Size(100, 22)
-        Me.TestTextBox.TabIndex = 29
+        Me.ModeTextBox.Location = New System.Drawing.Point(413, 75)
+        Me.ModeTextBox.Name = "ModeTextBox"
+        Me.ModeTextBox.Size = New System.Drawing.Size(100, 22)
+        Me.ModeTextBox.TabIndex = 27
         '
-        'Timerforbutton25
+        'FanModeTextBox
         '
-        Me.Timerforbutton25.Interval = 5000
+        Me.FanModeTextBox.Location = New System.Drawing.Point(565, 75)
+        Me.FanModeTextBox.Name = "FanModeTextBox"
+        Me.FanModeTextBox.Size = New System.Drawing.Size(100, 22)
+        Me.FanModeTextBox.TabIndex = 28
+        '
+        'Label7
+        '
+        Me.Label7.AutoSize = True
+        Me.Label7.Location = New System.Drawing.Point(79, 178)
+        Me.Label7.Name = "Label7"
+        Me.Label7.Size = New System.Drawing.Size(130, 16)
+        Me.Label7.TabIndex = 29
+        Me.Label7.Text = "Current Temperature"
+        Me.Label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'Label8
+        '
+        Me.Label8.AutoSize = True
+        Me.Label8.Location = New System.Drawing.Point(417, 56)
+        Me.Label8.Name = "Label8"
+        Me.Label8.Size = New System.Drawing.Size(42, 16)
+        Me.Label8.TabIndex = 30
+        Me.Label8.Text = "Mode"
+        '
+        'Label9
+        '
+        Me.Label9.AutoSize = True
+        Me.Label9.Location = New System.Drawing.Point(562, 56)
+        Me.Label9.Name = "Label9"
+        Me.Label9.Size = New System.Drawing.Size(68, 16)
+        Me.Label9.TabIndex = 31
+        Me.Label9.Text = "Fan Mode"
+        '
+        'Label10
+        '
+        Me.Label10.AutoSize = True
+        Me.Label10.Location = New System.Drawing.Point(417, 178)
+        Me.Label10.Name = "Label10"
+        Me.Label10.Size = New System.Drawing.Size(70, 16)
+        Me.Label10.TabIndex = 33
+        Me.Label10.Text = "Fan Status"
+        '
+        'FanStatusTextBox
+        '
+        Me.FanStatusTextBox.Location = New System.Drawing.Point(420, 197)
+        Me.FanStatusTextBox.Name = "FanStatusTextBox"
+        Me.FanStatusTextBox.Size = New System.Drawing.Size(100, 22)
+        Me.FanStatusTextBox.TabIndex = 32
+        '
+        'Label11
+        '
+        Me.Label11.AutoSize = True
+        Me.Label11.Location = New System.Drawing.Point(589, 178)
+        Me.Label11.Name = "Label11"
+        Me.Label11.Size = New System.Drawing.Size(90, 16)
+        Me.Label11.TabIndex = 35
+        Me.Label11.Text = "Fault Indicator"
+        '
+        'FaultTextBox
+        '
+        Me.FaultTextBox.Location = New System.Drawing.Point(592, 197)
+        Me.FaultTextBox.Name = "FaultTextBox"
+        Me.FaultTextBox.Size = New System.Drawing.Size(100, 22)
+        Me.FaultTextBox.TabIndex = 34
         '
         'HVACSmartHomeController
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(800, 450)
-        Me.Controls.Add(Me.TestTextBox)
-        Me.Controls.Add(Me.FanTextBox)
-        Me.Controls.Add(Me.ErrorTextBox)
+        Me.Controls.Add(Me.Label11)
+        Me.Controls.Add(Me.FaultTextBox)
+        Me.Controls.Add(Me.Label10)
+        Me.Controls.Add(Me.FanStatusTextBox)
+        Me.Controls.Add(Me.Label9)
+        Me.Controls.Add(Me.RoomTempTextBox)
+        Me.Controls.Add(Me.Label8)
+        Me.Controls.Add(Me.Label7)
+        Me.Controls.Add(Me.FanModeTextBox)
         Me.Controls.Add(Me.ModeTextBox)
         Me.Controls.Add(Me.TempHighIncreaseButton)
         Me.Controls.Add(Me.TempHighDecreaseButton)
@@ -327,8 +383,8 @@ Partial Class HVACSmartHomeController
     Friend WithEvents Label3 As Label
     Friend WithEvents PortsComboBox As ComboBox
     Friend WithEvents AnalogCoordsGroupBox As GroupBox
-    Friend WithEvents Analog1TextBox As TextBox
-    Friend WithEvents Analog2TextBox As TextBox
+    Friend WithEvents RoomTempTextBox As TextBox
+    Friend WithEvents MachineTempTextBox As TextBox
     Friend WithEvents Label2 As Label
     Friend WithEvents Label1 As Label
     Friend WithEvents Timer10ms As Timer
@@ -344,11 +400,16 @@ Partial Class HVACSmartHomeController
     Friend WithEvents TempLowIncreaseButton As Button
     Friend WithEvents TempHighDecreaseButton As Button
     Friend WithEvents TempHighIncreaseButton As Button
-    Friend WithEvents ModeTextBox As TextBox
-    Friend WithEvents ErrorTextBox As TextBox
     Friend WithEvents Timer30s As Timer
     Friend WithEvents Timer5s As Timer
-    Friend WithEvents FanTextBox As TextBox
-    Friend WithEvents TestTextBox As TextBox
-    Friend WithEvents Timerforbutton25 As Timer
+    Friend WithEvents ManualControlTimer As Timer
+    Friend WithEvents ModeTextBox As TextBox
+    Friend WithEvents FanModeTextBox As TextBox
+    Friend WithEvents Label7 As Label
+    Friend WithEvents Label8 As Label
+    Friend WithEvents Label9 As Label
+    Friend WithEvents Label10 As Label
+    Friend WithEvents FanStatusTextBox As TextBox
+    Friend WithEvents Label11 As Label
+    Friend WithEvents FaultTextBox As TextBox
 End Class
