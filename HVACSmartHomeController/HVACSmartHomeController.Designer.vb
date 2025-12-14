@@ -27,8 +27,9 @@ Partial Class HVACSmartHomeController
         Me.Label3 = New System.Windows.Forms.Label()
         Me.PortsComboBox = New System.Windows.Forms.ComboBox()
         Me.AnalogCoordsGroupBox = New System.Windows.Forms.GroupBox()
+        Me.UnconnectedRadioButton = New System.Windows.Forms.RadioButton()
+        Me.ConnectedRadioButton = New System.Windows.Forms.RadioButton()
         Me.ByteTextBox = New System.Windows.Forms.TextBox()
-        Me.ConnectButton = New System.Windows.Forms.Button()
         Me.ButtonsTextBox = New System.Windows.Forms.TextBox()
         Me.MachineTempTextBox = New System.Windows.Forms.TextBox()
         Me.RoomTempTextBox = New System.Windows.Forms.TextBox()
@@ -55,11 +56,12 @@ Partial Class HVACSmartHomeController
         Me.FaultTextBox = New System.Windows.Forms.TextBox()
         Me.ExitButton = New System.Windows.Forms.Button()
         Me.Timer5sBootUp = New System.Windows.Forms.Timer(Me.components)
-        Me.TextBox1 = New System.Windows.Forms.TextBox()
         Me.Timer2m = New System.Windows.Forms.Timer(Me.components)
-        Me.ConnectedRadioButton = New System.Windows.Forms.RadioButton()
-        Me.UnconnectedRadioButton = New System.Windows.Forms.RadioButton()
+        Me.TimerSerial = New System.Windows.Forms.Timer(Me.components)
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.AnalogCoordsGroupBox.SuspendLayout()
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'SerialPort1
@@ -84,7 +86,7 @@ Partial Class HVACSmartHomeController
         Me.PortsComboBox.FormattingEnabled = True
         Me.PortsComboBox.Location = New System.Drawing.Point(9, 46)
         Me.PortsComboBox.Name = "PortsComboBox"
-        Me.PortsComboBox.Size = New System.Drawing.Size(56, 25)
+        Me.PortsComboBox.Size = New System.Drawing.Size(106, 25)
         Me.PortsComboBox.TabIndex = 15
         '
         'AnalogCoordsGroupBox
@@ -92,7 +94,6 @@ Partial Class HVACSmartHomeController
         Me.AnalogCoordsGroupBox.Controls.Add(Me.UnconnectedRadioButton)
         Me.AnalogCoordsGroupBox.Controls.Add(Me.ConnectedRadioButton)
         Me.AnalogCoordsGroupBox.Controls.Add(Me.ByteTextBox)
-        Me.AnalogCoordsGroupBox.Controls.Add(Me.ConnectButton)
         Me.AnalogCoordsGroupBox.Controls.Add(Me.ButtonsTextBox)
         Me.AnalogCoordsGroupBox.Controls.Add(Me.Label3)
         Me.AnalogCoordsGroupBox.Controls.Add(Me.PortsComboBox)
@@ -104,32 +105,46 @@ Partial Class HVACSmartHomeController
         Me.AnalogCoordsGroupBox.TabStop = False
         Me.AnalogCoordsGroupBox.Text = "Serial"
         '
+        'UnconnectedRadioButton
+        '
+        Me.UnconnectedRadioButton.AutoSize = True
+        Me.UnconnectedRadioButton.Checked = True
+        Me.UnconnectedRadioButton.Location = New System.Drawing.Point(121, 73)
+        Me.UnconnectedRadioButton.Name = "UnconnectedRadioButton"
+        Me.UnconnectedRadioButton.Size = New System.Drawing.Size(109, 21)
+        Me.UnconnectedRadioButton.TabIndex = 20
+        Me.UnconnectedRadioButton.TabStop = True
+        Me.UnconnectedRadioButton.Text = "Unconnected"
+        Me.UnconnectedRadioButton.UseVisualStyleBackColor = True
+        '
+        'ConnectedRadioButton
+        '
+        Me.ConnectedRadioButton.AutoSize = True
+        Me.ConnectedRadioButton.Location = New System.Drawing.Point(121, 47)
+        Me.ConnectedRadioButton.Name = "ConnectedRadioButton"
+        Me.ConnectedRadioButton.Size = New System.Drawing.Size(94, 21)
+        Me.ConnectedRadioButton.TabIndex = 19
+        Me.ConnectedRadioButton.Text = "Connected"
+        Me.ConnectedRadioButton.UseVisualStyleBackColor = True
+        '
         'ByteTextBox
         '
         Me.ByteTextBox.Font = New System.Drawing.Font("Segoe UI", 7.8!, System.Drawing.FontStyle.Bold)
-        Me.ByteTextBox.Location = New System.Drawing.Point(84, 18)
+        Me.ByteTextBox.Location = New System.Drawing.Point(89, 20)
         Me.ByteTextBox.Name = "ByteTextBox"
+        Me.ByteTextBox.ReadOnly = True
         Me.ByteTextBox.Size = New System.Drawing.Size(184, 25)
         Me.ByteTextBox.TabIndex = 18
         Me.ByteTextBox.Visible = False
-        '
-        'ConnectButton
-        '
-        Me.ConnectButton.Location = New System.Drawing.Point(9, 73)
-        Me.ConnectButton.Name = "ConnectButton"
-        Me.ConnectButton.Size = New System.Drawing.Size(85, 25)
-        Me.ConnectButton.TabIndex = 18
-        Me.ConnectButton.Text = "Connect"
-        Me.ConnectButton.UseVisualStyleBackColor = True
         '
         'ButtonsTextBox
         '
         Me.ButtonsTextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.ButtonsTextBox.Location = New System.Drawing.Point(199, 45)
+        Me.ButtonsTextBox.Location = New System.Drawing.Point(9, 74)
         Me.ButtonsTextBox.Name = "ButtonsTextBox"
         Me.ButtonsTextBox.ReadOnly = True
-        Me.ButtonsTextBox.Size = New System.Drawing.Size(66, 25)
+        Me.ButtonsTextBox.Size = New System.Drawing.Size(106, 25)
         Me.ButtonsTextBox.TabIndex = 13
         Me.ButtonsTextBox.Visible = False
         '
@@ -138,7 +153,7 @@ Partial Class HVACSmartHomeController
         Me.MachineTempTextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.MachineTempTextBox.Font = New System.Drawing.Font("Segoe UI", 7.8!, System.Drawing.FontStyle.Bold)
-        Me.MachineTempTextBox.Location = New System.Drawing.Point(285, 241)
+        Me.MachineTempTextBox.Location = New System.Drawing.Point(353, 137)
         Me.MachineTempTextBox.Name = "MachineTempTextBox"
         Me.MachineTempTextBox.ReadOnly = True
         Me.MachineTempTextBox.Size = New System.Drawing.Size(66, 25)
@@ -150,7 +165,7 @@ Partial Class HVACSmartHomeController
         Me.RoomTempTextBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.RoomTempTextBox.Font = New System.Drawing.Font("Segoe UI", 7.8!, System.Drawing.FontStyle.Bold)
-        Me.RoomTempTextBox.Location = New System.Drawing.Point(102, 241)
+        Me.RoomTempTextBox.Location = New System.Drawing.Point(353, 100)
         Me.RoomTempTextBox.Name = "RoomTempTextBox"
         Me.RoomTempTextBox.ReadOnly = True
         Me.RoomTempTextBox.Size = New System.Drawing.Size(66, 25)
@@ -164,7 +179,7 @@ Partial Class HVACSmartHomeController
         'TempHighTextBox
         '
         Me.TempHighTextBox.Font = New System.Drawing.Font("Segoe UI", 7.8!, System.Drawing.FontStyle.Bold)
-        Me.TempHighTextBox.Location = New System.Drawing.Point(174, 241)
+        Me.TempHighTextBox.Location = New System.Drawing.Point(425, 100)
         Me.TempHighTextBox.Name = "TempHighTextBox"
         Me.TempHighTextBox.ReadOnly = True
         Me.TempHighTextBox.Size = New System.Drawing.Size(76, 25)
@@ -175,7 +190,7 @@ Partial Class HVACSmartHomeController
         'TempLowTextBox
         '
         Me.TempLowTextBox.Font = New System.Drawing.Font("Segoe UI", 7.8!, System.Drawing.FontStyle.Bold)
-        Me.TempLowTextBox.Location = New System.Drawing.Point(20, 241)
+        Me.TempLowTextBox.Location = New System.Drawing.Point(271, 100)
         Me.TempLowTextBox.Name = "TempLowTextBox"
         Me.TempLowTextBox.ReadOnly = True
         Me.TempLowTextBox.Size = New System.Drawing.Size(76, 25)
@@ -187,7 +202,7 @@ Partial Class HVACSmartHomeController
         '
         Me.Label5.AutoSize = True
         Me.Label5.Font = New System.Drawing.Font("Segoe UI", 7.8!, System.Drawing.FontStyle.Bold)
-        Me.Label5.Location = New System.Drawing.Point(41, 222)
+        Me.Label5.Location = New System.Drawing.Point(292, 81)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(33, 17)
         Me.Label5.TabIndex = 20
@@ -197,7 +212,7 @@ Partial Class HVACSmartHomeController
         '
         Me.Label6.AutoSize = True
         Me.Label6.Font = New System.Drawing.Font("Segoe UI", 7.8!, System.Drawing.FontStyle.Bold)
-        Me.Label6.Location = New System.Drawing.Point(188, 222)
+        Me.Label6.Location = New System.Drawing.Point(439, 81)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(38, 17)
         Me.Label6.TabIndex = 21
@@ -205,7 +220,7 @@ Partial Class HVACSmartHomeController
         '
         'TempLowDecreaseButton
         '
-        Me.TempLowDecreaseButton.Location = New System.Drawing.Point(20, 269)
+        Me.TempLowDecreaseButton.Location = New System.Drawing.Point(271, 128)
         Me.TempLowDecreaseButton.Name = "TempLowDecreaseButton"
         Me.TempLowDecreaseButton.Size = New System.Drawing.Size(35, 34)
         Me.TempLowDecreaseButton.TabIndex = 22
@@ -214,7 +229,7 @@ Partial Class HVACSmartHomeController
         '
         'TempLowIncreaseButton
         '
-        Me.TempLowIncreaseButton.Location = New System.Drawing.Point(61, 269)
+        Me.TempLowIncreaseButton.Location = New System.Drawing.Point(312, 128)
         Me.TempLowIncreaseButton.Name = "TempLowIncreaseButton"
         Me.TempLowIncreaseButton.Size = New System.Drawing.Size(35, 34)
         Me.TempLowIncreaseButton.TabIndex = 23
@@ -223,7 +238,7 @@ Partial Class HVACSmartHomeController
         '
         'TempHighDecreaseButton
         '
-        Me.TempHighDecreaseButton.Location = New System.Drawing.Point(174, 269)
+        Me.TempHighDecreaseButton.Location = New System.Drawing.Point(425, 128)
         Me.TempHighDecreaseButton.Name = "TempHighDecreaseButton"
         Me.TempHighDecreaseButton.Size = New System.Drawing.Size(35, 34)
         Me.TempHighDecreaseButton.TabIndex = 24
@@ -232,7 +247,7 @@ Partial Class HVACSmartHomeController
         '
         'TempHighIncreaseButton
         '
-        Me.TempHighIncreaseButton.Location = New System.Drawing.Point(215, 269)
+        Me.TempHighIncreaseButton.Location = New System.Drawing.Point(466, 128)
         Me.TempHighIncreaseButton.Name = "TempHighIncreaseButton"
         Me.TempHighIncreaseButton.Size = New System.Drawing.Size(35, 34)
         Me.TempHighIncreaseButton.TabIndex = 25
@@ -254,16 +269,18 @@ Partial Class HVACSmartHomeController
         'ModeTextBox
         '
         Me.ModeTextBox.Font = New System.Drawing.Font("Segoe UI", 7.8!, System.Drawing.FontStyle.Bold)
-        Me.ModeTextBox.Location = New System.Drawing.Point(413, 75)
+        Me.ModeTextBox.Location = New System.Drawing.Point(160, 242)
         Me.ModeTextBox.Name = "ModeTextBox"
+        Me.ModeTextBox.ReadOnly = True
         Me.ModeTextBox.Size = New System.Drawing.Size(146, 25)
         Me.ModeTextBox.TabIndex = 27
         '
         'FanModeTextBox
         '
         Me.FanModeTextBox.Font = New System.Drawing.Font("Segoe UI", 7.8!, System.Drawing.FontStyle.Bold)
-        Me.FanModeTextBox.Location = New System.Drawing.Point(565, 75)
+        Me.FanModeTextBox.Location = New System.Drawing.Point(526, 222)
         Me.FanModeTextBox.Name = "FanModeTextBox"
+        Me.FanModeTextBox.ReadOnly = True
         Me.FanModeTextBox.Size = New System.Drawing.Size(100, 25)
         Me.FanModeTextBox.TabIndex = 28
         '
@@ -271,18 +288,18 @@ Partial Class HVACSmartHomeController
         '
         Me.Label7.AutoSize = True
         Me.Label7.Font = New System.Drawing.Font("Segoe UI", 7.8!, System.Drawing.FontStyle.Bold)
-        Me.Label7.Location = New System.Drawing.Point(79, 178)
+        Me.Label7.Location = New System.Drawing.Point(344, 56)
         Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(136, 17)
+        Me.Label7.Size = New System.Drawing.Size(86, 34)
         Me.Label7.TabIndex = 29
-        Me.Label7.Text = "Current Temperature"
+        Me.Label7.Text = "Room" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Temperature"
         Me.Label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'Label8
         '
         Me.Label8.AutoSize = True
         Me.Label8.Font = New System.Drawing.Font("Segoe UI", 7.8!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label8.Location = New System.Drawing.Point(417, 56)
+        Me.Label8.Location = New System.Drawing.Point(204, 225)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(43, 17)
         Me.Label8.TabIndex = 30
@@ -292,7 +309,7 @@ Partial Class HVACSmartHomeController
         '
         Me.Label9.AutoSize = True
         Me.Label9.Font = New System.Drawing.Font("Segoe UI", 7.8!, System.Drawing.FontStyle.Bold)
-        Me.Label9.Location = New System.Drawing.Point(562, 56)
+        Me.Label9.Location = New System.Drawing.Point(540, 202)
         Me.Label9.Name = "Label9"
         Me.Label9.Size = New System.Drawing.Size(69, 17)
         Me.Label9.TabIndex = 31
@@ -302,7 +319,7 @@ Partial Class HVACSmartHomeController
         '
         Me.Label10.AutoSize = True
         Me.Label10.Font = New System.Drawing.Font("Segoe UI", 7.8!, System.Drawing.FontStyle.Bold)
-        Me.Label10.Location = New System.Drawing.Point(417, 178)
+        Me.Label10.Location = New System.Drawing.Point(537, 250)
         Me.Label10.Name = "Label10"
         Me.Label10.Size = New System.Drawing.Size(72, 17)
         Me.Label10.TabIndex = 33
@@ -311,8 +328,9 @@ Partial Class HVACSmartHomeController
         'FanStatusTextBox
         '
         Me.FanStatusTextBox.Font = New System.Drawing.Font("Segoe UI", 7.8!, System.Drawing.FontStyle.Bold)
-        Me.FanStatusTextBox.Location = New System.Drawing.Point(420, 197)
+        Me.FanStatusTextBox.Location = New System.Drawing.Point(526, 269)
         Me.FanStatusTextBox.Name = "FanStatusTextBox"
+        Me.FanStatusTextBox.ReadOnly = True
         Me.FanStatusTextBox.Size = New System.Drawing.Size(100, 25)
         Me.FanStatusTextBox.TabIndex = 32
         '
@@ -320,7 +338,7 @@ Partial Class HVACSmartHomeController
         '
         Me.Label11.AutoSize = True
         Me.Label11.Font = New System.Drawing.Font("Segoe UI", 7.8!, System.Drawing.FontStyle.Bold)
-        Me.Label11.Location = New System.Drawing.Point(589, 178)
+        Me.Label11.Location = New System.Drawing.Point(297, 327)
         Me.Label11.Name = "Label11"
         Me.Label11.Size = New System.Drawing.Size(98, 17)
         Me.Label11.TabIndex = 35
@@ -329,9 +347,12 @@ Partial Class HVACSmartHomeController
         'FaultTextBox
         '
         Me.FaultTextBox.Font = New System.Drawing.Font("Segoe UI", 7.8!, System.Drawing.FontStyle.Bold)
-        Me.FaultTextBox.Location = New System.Drawing.Point(592, 197)
+        Me.FaultTextBox.Location = New System.Drawing.Point(300, 347)
+        Me.FaultTextBox.Multiline = True
         Me.FaultTextBox.Name = "FaultTextBox"
-        Me.FaultTextBox.Size = New System.Drawing.Size(196, 25)
+        Me.FaultTextBox.ReadOnly = True
+        Me.FaultTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+        Me.FaultTextBox.Size = New System.Drawing.Size(388, 91)
         Me.FaultTextBox.TabIndex = 34
         '
         'ExitButton
@@ -348,46 +369,43 @@ Partial Class HVACSmartHomeController
         '
         Me.Timer5sBootUp.Interval = 5000
         '
-        'TextBox1
-        '
-        Me.TextBox1.Font = New System.Drawing.Font("Segoe UI", 7.8!, System.Drawing.FontStyle.Bold)
-        Me.TextBox1.Location = New System.Drawing.Point(476, 296)
-        Me.TextBox1.Name = "TextBox1"
-        Me.TextBox1.Size = New System.Drawing.Size(175, 25)
-        Me.TextBox1.TabIndex = 37
-        '
         'Timer2m
         '
         Me.Timer2m.Interval = 120000
         '
-        'ConnectedRadioButton
+        'TimerSerial
         '
-        Me.ConnectedRadioButton.AutoSize = True
-        Me.ConnectedRadioButton.Location = New System.Drawing.Point(100, 47)
-        Me.ConnectedRadioButton.Name = "ConnectedRadioButton"
-        Me.ConnectedRadioButton.Size = New System.Drawing.Size(94, 21)
-        Me.ConnectedRadioButton.TabIndex = 19
-        Me.ConnectedRadioButton.Text = "Connected"
-        Me.ConnectedRadioButton.UseVisualStyleBackColor = True
+        Me.TimerSerial.Interval = 10000
         '
-        'UnconnectedRadioButton
+        'Label1
         '
-        Me.UnconnectedRadioButton.AutoSize = True
-        Me.UnconnectedRadioButton.Checked = True
-        Me.UnconnectedRadioButton.Location = New System.Drawing.Point(100, 73)
-        Me.UnconnectedRadioButton.Name = "UnconnectedRadioButton"
-        Me.UnconnectedRadioButton.Size = New System.Drawing.Size(109, 21)
-        Me.UnconnectedRadioButton.TabIndex = 20
-        Me.UnconnectedRadioButton.TabStop = True
-        Me.UnconnectedRadioButton.Text = "Unconnected"
-        Me.UnconnectedRadioButton.UseVisualStyleBackColor = True
+        Me.Label1.AutoSize = True
+        Me.Label1.Font = New System.Drawing.Font("Segoe UI", 7.8!, System.Drawing.FontStyle.Bold)
+        Me.Label1.Location = New System.Drawing.Point(344, 165)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(86, 34)
+        Me.Label1.TabIndex = 38
+        Me.Label1.Text = "Machine" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Temperature"
+        Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'PictureBox1
+        '
+        Me.PictureBox1.Image = Global.HVACSmartHomeController.My.Resources.Resources.Spirit_Black
+        Me.PictureBox1.Location = New System.Drawing.Point(9, 12)
+        Me.PictureBox1.Name = "PictureBox1"
+        Me.PictureBox1.Size = New System.Drawing.Size(68, 98)
+        Me.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
+        Me.PictureBox1.TabIndex = 39
+        Me.PictureBox1.TabStop = False
         '
         'HVACSmartHomeController
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(246, Byte), Integer), CType(CType(146, Byte), Integer), CType(CType(64, Byte), Integer))
         Me.ClientSize = New System.Drawing.Size(800, 450)
-        Me.Controls.Add(Me.TextBox1)
+        Me.Controls.Add(Me.PictureBox1)
+        Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.ExitButton)
         Me.Controls.Add(Me.Label11)
         Me.Controls.Add(Me.FaultTextBox)
@@ -413,6 +431,7 @@ Partial Class HVACSmartHomeController
         Me.Text = "Form1"
         Me.AnalogCoordsGroupBox.ResumeLayout(False)
         Me.AnalogCoordsGroupBox.PerformLayout()
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -426,7 +445,6 @@ Partial Class HVACSmartHomeController
     Friend WithEvents MachineTempTextBox As TextBox
     Friend WithEvents Timer10ms As Timer
     Friend WithEvents ButtonsTextBox As TextBox
-    Friend WithEvents ConnectButton As Button
     Friend WithEvents ByteTextBox As TextBox
     Friend WithEvents TempHighTextBox As TextBox
     Friend WithEvents TempLowTextBox As TextBox
@@ -450,8 +468,10 @@ Partial Class HVACSmartHomeController
     Friend WithEvents FaultTextBox As TextBox
     Friend WithEvents ExitButton As Button
     Friend WithEvents Timer5sBootUp As Timer
-    Friend WithEvents TextBox1 As TextBox
     Friend WithEvents Timer2m As Timer
     Friend WithEvents UnconnectedRadioButton As RadioButton
     Friend WithEvents ConnectedRadioButton As RadioButton
+    Friend WithEvents TimerSerial As Timer
+    Friend WithEvents Label1 As Label
+    Friend WithEvents PictureBox1 As PictureBox
 End Class

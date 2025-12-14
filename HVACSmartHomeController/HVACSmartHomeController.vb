@@ -2,7 +2,7 @@
 'Fall 2025
 'RCET3371
 'HVACSmartHomeController
-'github link
+'https://github.com/TheGoldenPorkchop/HVACSmartHomeController/tree/main
 Option Strict On
 Option Explicit On
 Imports System.IO.Ports
@@ -20,6 +20,8 @@ Public Class HVACSmartHomeController
         Catch ex As Exception
             LogData("Communication lost with QY@ board - Attempting reconnect")
             FaultTextBox.Text = "Communication lost with QY@ board - Attempting reconnect"
+            MachineTempTextBox.Text = "???"
+            RoomTempTextBox.Text = "???"
         End Try
     End Sub
 
@@ -32,10 +34,13 @@ Public Class HVACSmartHomeController
         Try
             SerialPort1.PortName = PortsComboBox.Text
             ConnectedRadioButton.Checked = True
+            FaultTextBox.Text = ""
         Catch ex As Exception
             MsgBox("Select or Change your Port via the Combo Box")
             LogData("Select or Change your Port via the Combo Box")
             FaultTextBox.Text = "Select or Change your Port via the Combo Box"
+            MachineTempTextBox.Text = "???"
+            RoomTempTextBox.Text = "???"
         End Try
         SerialPort1.Open()
     End Sub
@@ -51,6 +56,8 @@ Public Class HVACSmartHomeController
             Catch ex As Exception
                 LogData("Communication lost with QY@ board - Attempting reconnect")
                 FaultTextBox.Text = "Communication lost with QY@ board - Attempting reconnect"
+                MachineTempTextBox.Text = "???"
+                RoomTempTextBox.Text = "???"
             End Try
         End If
     End Sub
@@ -69,7 +76,7 @@ Public Class HVACSmartHomeController
     Private Function SeperateNumberFromSymbol(Value As String) As Double
         Dim num As String()
         num = Split(Value, "°")
-        If num(0) = "" Then
+        If num(0) = "" Or num(0) = "???" Then
             Return 0
         Else
             Dim Number As Double = CDbl(num(0))
@@ -87,28 +94,33 @@ Public Class HVACSmartHomeController
             Catch ex As Exception
                 UnconnectedRadioButton.Checked = True
                 LogData("Communication lost with QY@ board - Attempting reconnect")
+                MachineTempTextBox.Text = "???"
+                RoomTempTextBox.Text = "???"
             End Try
         End If
 
     End Sub
 
     'Event Handlers---------------------------------------------------------------------------
+
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         GetPorts()
         Try
             Connect()
         Catch ex As Exception
             MsgBox("Connect your Qy@ Board")
+            LogData("QY@ board was not connected upon start up - Attempting reconnect")
             UnconnectedRadioButton.Checked = True
+            MachineTempTextBox.Text = "???"
+            RoomTempTextBox.Text = "???"
         End Try
         Timer10ms.Start()
         Timer30s.Start()
         Timer5sBootUp.Start()
         Timer2m.Start()
+        TimerSerial.Start()
     End Sub
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles ConnectButton.Click
-        Connect()
-    End Sub
+
     Private Sub SerialPort1_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles SerialPort1.DataReceived
         CheckForIllegalCrossThreadCalls = False
         Dim numberOfBytes = SerialPort1.BytesToRead
@@ -132,8 +144,8 @@ Public Class HVACSmartHomeController
                 machineTempTotalData = machineTempData1 + machineTempData2
 
 
-                RoomTempTextBox.Text = ((roomTempTotalData * 0.058651026393) + 40).ToString("000.00")
-                MachineTempTextBox.Text = ((machineTempTotalData * 0.058651026393) + 40).ToString("000.00")
+                RoomTempTextBox.Text = ((roomTempTotalData * 0.058651026393) + 40).ToString("00.00°")
+                MachineTempTextBox.Text = ((machineTempTotalData * 0.058651026393) + 40).ToString("00.00°")
                 buttonsData = CInt(buffer(4))
                 ButtonsTextBox.Text = CStr(buttonsData)
                 ByteTextBox.Text = buffer(0).ToString + " & " + buffer(1).ToString + " & " + buffer(2).ToString + " & " + buffer(3).ToString + " & " + buffer(4).ToString
@@ -201,6 +213,8 @@ Public Class HVACSmartHomeController
     Dim hasManualCoolEnded As Boolean = False
     Dim hasOnFanEnded As Boolean = False
     Dim differentialPressureSensor As Boolean = False
+    Dim safetyLockEnd As Boolean = False
+    Dim pressureLockEnd As Boolean = False
 
     Private Sub Timer10ms_Tick(sender As Object, e As EventArgs) Handles Timer10ms.Tick
         Dim safetyLockTemp As Boolean = False
@@ -209,13 +223,21 @@ Public Class HVACSmartHomeController
         Dim data(1) As Byte 'put bytes into an array
         data(0) = &H20 'Writes to the Digital Output
         QyatRead()
-        TextBox1.Text = "0"
         If ButtonsTextBox.Text IsNot "" Then
 
             'Safety interlock switch
             If CInt(ButtonsTextBox.Text) Mod 2 = 0 Then
                 safetyLockTemp = True 'low
+                FaultTextBox.Text = "Safety interlock switch LOW - Heating/Cooling disabled"
+                If safetyLockEnd = False Then
+                    LogData("Safety interlock switch LOW - Heating/Cooling disabled")
+                    safetyLockEnd = True
+                End If
             Else
+                If safetyLockEnd = True Then
+                    FaultTextBox.Text = ""
+                    safetyLockEnd = False
+                End If
                 safetyLockTemp = False 'high
             End If
 
@@ -243,20 +265,30 @@ Public Class HVACSmartHomeController
                 SendLEDData(data(1)) 'Fan is on
                 FanStatusTextBox.Text = "On"
                 hasOnFanEnded = False
+                FanModeTextBox.Text = "On"
             Else
                 If hasOnFanEnded = False Then
                     data(1) = &H0 'Fan is off
                     SendLEDData(data(1)) 'Fan is off
                     FanStatusTextBox.Text = "Off"
                     hasOnFanEnded = True
+                    FanModeTextBox.Text = "Auto"
                 End If
             End If
 
             'Differential pressure sensor
             If CInt(ButtonsTextBox.Text) Mod 16 < 8 Then
                 pressureLockTemp = True
-                FaultTextBox.Text = "Pressure Sensore oof"
+                FaultTextBox.Text = "Differential pressure sensor LOW - Heating/Cooling disabled"
+                If pressureLockEnd = False Then
+                    LogData("Differential pressure sensor LOW - Heating/Cooling disabled")
+                    pressureLockEnd = True
+                End If
             Else
+                If pressureLockEnd = True Then
+                    FaultTextBox.Text = ""
+                    pressureLockEnd = False
+                End If
                 pressureLockTemp = False
             End If
 
@@ -390,11 +422,9 @@ Public Class HVACSmartHomeController
         End If
     End Sub
 
-    Private Sub Label4_Click(sender As Object, e As EventArgs)
-
-    End Sub
-
-    Private Sub ByteTextBox_TextChanged(sender As Object, e As EventArgs) Handles ByteTextBox.TextChanged
-
+    Private Sub TimerSerial_Tick(sender As Object, e As EventArgs) Handles TimerSerial.Tick
+        If UnconnectedRadioButton.Checked = True Then
+            Connect()
+        End If
     End Sub
 End Class
