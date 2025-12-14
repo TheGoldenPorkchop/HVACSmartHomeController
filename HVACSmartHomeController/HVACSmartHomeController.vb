@@ -18,7 +18,8 @@ Public Class HVACSmartHomeController
         Try
             PortsComboBox.SelectedIndex = 0
         Catch ex As Exception
-
+            LogData("Communication lost with QY@ board - Attempting reconnect")
+            FaultTextBox.Text = "Communication lost with QY@ board - Attempting reconnect"
         End Try
     End Sub
 
@@ -30,10 +31,12 @@ Public Class HVACSmartHomeController
         SerialPort1.DataBits = 8
         Try
             SerialPort1.PortName = PortsComboBox.Text
+            ConnectedRadioButton.Checked = True
         Catch ex As Exception
             MsgBox("Select or Change your Port via the Combo Box")
+            LogData("Select or Change your Port via the Combo Box")
+            FaultTextBox.Text = "Select or Change your Port via the Combo Box"
         End Try
-        'SerialPort1.PortName = "COM5" 'RS232 Cable
         SerialPort1.Open()
     End Sub
 
@@ -41,12 +44,26 @@ Public Class HVACSmartHomeController
         Dim data(1) As Byte
         data(0) = &H53 'Read Analog
         data(1) = &H30 'Read Digital
-        Try
-            SerialPort1.Write(data, 0, 1)
-            SerialPort1.Write(data, 1, 1)
-        Catch ex As Exception
+        If ConnectedRadioButton.Checked = True Then
+            Try
+                SerialPort1.Write(data, 0, 1)
+                SerialPort1.Write(data, 1, 1)
+            Catch ex As Exception
+                LogData("Communication lost with QY@ board - Attempting reconnect")
+                FaultTextBox.Text = "Communication lost with QY@ board - Attempting reconnect"
+            End Try
+        End If
+    End Sub
 
-        End Try
+    Sub LogData(currentError As String)
+        Dim filePath As String = $"..\..\HVACSystem-{DateTime.Now.ToString("yyMMdd")}.log"
+        Dim exactTime As String = DateTime.Now.ToString '("yyMMddhh") 'MODIFY FOR 
+        FileOpen(1, filePath, OpenMode.Append)
+        'Write(1, DateTime.Now)
+        Write(1, {DateTime.Now.ToString("yyMMdd-HHmmss: ")})
+        'Write(1, {DateTime.Now.ToString("yyMMddhh")})
+        WriteLine(1, currentError)
+        FileClose(1)
     End Sub
 
     Private Function SeperateNumberFromSymbol(Value As String) As Double
@@ -60,6 +77,21 @@ Public Class HVACSmartHomeController
         End If
     End Function
 
+    Sub SendLEDData(hexData As Byte)
+        Dim data(1) As Byte 'put bytes into an array
+        data(0) = &H20 'Writes to the Digital Output
+        data(1) = hexData
+        If ConnectedRadioButton.Checked = True Then
+            Try
+                SerialPort1.Write(data, 0, 2) 'Fan is off
+            Catch ex As Exception
+                UnconnectedRadioButton.Checked = True
+                LogData("Communication lost with QY@ board - Attempting reconnect")
+            End Try
+        End If
+
+    End Sub
+
     'Event Handlers---------------------------------------------------------------------------
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         GetPorts()
@@ -67,33 +99,43 @@ Public Class HVACSmartHomeController
             Connect()
         Catch ex As Exception
             MsgBox("Connect your Qy@ Board")
+            UnconnectedRadioButton.Checked = True
         End Try
         Timer10ms.Start()
         Timer30s.Start()
+        Timer5sBootUp.Start()
+        Timer2m.Start()
     End Sub
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles ConnectButton.Click
-        'test
+        Connect()
     End Sub
     Private Sub SerialPort1_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles SerialPort1.DataReceived
         CheckForIllegalCrossThreadCalls = False
         Dim numberOfBytes = SerialPort1.BytesToRead
         Dim buffer(numberOfBytes - 1) As Byte
         Dim got As Integer = SerialPort1.Read(buffer, 0, numberOfBytes)
-        Dim XCoordinate As Integer
-        Dim YCoordinate As Integer
+        Dim roomTempData1 As Double
+        Dim roomTempData2 As Double
+        Dim machineTempData1 As Double
+        Dim machineTempData2 As Double
+        Dim roomTempTotalData As Double
+        Dim machineTempTotalData As Double
         Dim buttonsData As Integer
         If got > 0 Then
             If buffer.Length >= 5 Then
-                XCoordinate = CInt((buffer(0) * 0.234375) + 40)
-                YCoordinate = CInt((buffer(2) * 0.234375) + 40)
-                Static oldX As Integer = XCoordinate
-                Static oldY As Integer = YCoordinate
-                RoomTempTextBox.Text = CStr(XCoordinate)
-                MachineTempTextBox.Text = CStr(YCoordinate)
+                roomTempData1 = CDbl((buffer(0))) * 4
+                roomTempData2 = CDbl((buffer(1))) / 64
+                roomTempTotalData = roomTempData1 + roomTempData2
+
+                machineTempData1 = CDbl((buffer(2))) * 4
+                machineTempData2 = CDbl((buffer(3))) / 64
+                machineTempTotalData = machineTempData1 + machineTempData2
+
+
+                RoomTempTextBox.Text = ((roomTempTotalData * 0.058651026393) + 40).ToString("000.00")
+                MachineTempTextBox.Text = ((machineTempTotalData * 0.058651026393) + 40).ToString("000.00")
                 buttonsData = CInt(buffer(4))
                 ButtonsTextBox.Text = CStr(buttonsData)
-                oldX = XCoordinate
-                oldY = YCoordinate
                 ByteTextBox.Text = buffer(0).ToString + " & " + buffer(1).ToString + " & " + buffer(2).ToString + " & " + buffer(3).ToString + " & " + buffer(4).ToString
             End If
         End If
@@ -155,10 +197,10 @@ Public Class HVACSmartHomeController
     Dim heatingControl As Boolean = False
     Dim coolingControl As Boolean = False
     Dim hysteresisStart As Boolean = False
-    Dim manualControl As Boolean = False
     Dim hasManualHeatEnded As Boolean = False
     Dim hasManualCoolEnded As Boolean = False
     Dim hasOnFanEnded As Boolean = False
+    Dim differentialPressureSensor As Boolean = False
 
     Private Sub Timer10ms_Tick(sender As Object, e As EventArgs) Handles Timer10ms.Tick
         Dim safetyLockTemp As Boolean = False
@@ -167,6 +209,7 @@ Public Class HVACSmartHomeController
         Dim data(1) As Byte 'put bytes into an array
         data(0) = &H20 'Writes to the Digital Output
         QyatRead()
+        TextBox1.Text = "0"
         If ButtonsTextBox.Text IsNot "" Then
 
             'Safety interlock switch
@@ -177,10 +220,10 @@ Public Class HVACSmartHomeController
             End If
 
             'Heating Control
-            If CInt(ButtonsTextBox.Text) Mod 4 < 2 Or CInt(ButtonsTextBox.Text) Mod 4 = 1 Then
+            If CInt(ButtonsTextBox.Text) Mod 4 < 2 Then
                 If safetyLockTemp = False And pressureLockTemp = False Then
                     data(1) = &H8 'Fan is on
-                    SerialPort1.Write(data, 0, 2) 'Fan is on
+                    SendLEDData(data(1))
                     FanStatusTextBox.Text = "On"
                     ManualControlTimer.Start()
                     heatingControl = True
@@ -197,13 +240,13 @@ Public Class HVACSmartHomeController
             'Fan-only mode
             If CInt(ButtonsTextBox.Text) Mod 8 < 4 Then
                 data(1) = &H8 'Fan is on
-                SerialPort1.Write(data, 0, 2) 'Fan is on
+                SendLEDData(data(1)) 'Fan is on
                 FanStatusTextBox.Text = "On"
                 hasOnFanEnded = False
             Else
                 If hasOnFanEnded = False Then
                     data(1) = &H0 'Fan is off
-                    SerialPort1.Write(data, 0, 2) 'Fan is off
+                    SendLEDData(data(1)) 'Fan is off
                     FanStatusTextBox.Text = "Off"
                     hasOnFanEnded = True
                 End If
@@ -221,7 +264,7 @@ Public Class HVACSmartHomeController
             If CInt(ButtonsTextBox.Text) Mod 32 < 16 Then
                 If safetyLockTemp = False And pressureLockTemp = False Then
                     data(1) = &H8 'Fan is on
-                    SerialPort1.Write(data, 0, 2) 'Fan is on
+                    SendLEDData(data(1)) 'Fan is on
                     FanStatusTextBox.Text = "On"
                     ManualControlTimer.Start()
                     coolingControl = True
@@ -245,13 +288,13 @@ Public Class HVACSmartHomeController
                 If hysteresisStart = False Then
                     If SeperateNumberFromSymbol(RoomTempTextBox.Text) > SeperateNumberFromSymbol(TempHighTextBox.Text) Then
                         data(1) = &H8 'Fan is on
-                        SerialPort1.Write(data, 0, 2) 'Fan is on
+                        SendLEDData(data(1)) 'Fan is on
                         FanStatusTextBox.Text = "On"
                         ModeTextBox.Text = "Cooling"
                         hysteresisStart = True
                     ElseIf SeperateNumberFromSymbol(RoomTempTextBox.Text) < SeperateNumberFromSymbol(TempLowTextBox.Text) Then
                         data(1) = &H8 'Fan is on
-                        SerialPort1.Write(data, 0, 2) 'Fan is on
+                        SendLEDData(data(1)) 'Fan is on
                         FanStatusTextBox.Text = "On"
                         ModeTextBox.Text = "Heating"
                         hysteresisStart = True
@@ -261,17 +304,17 @@ Public Class HVACSmartHomeController
                 Else
                     If SeperateNumberFromSymbol(RoomTempTextBox.Text) > (SeperateNumberFromSymbol(TempHighTextBox.Text) - 2) Then
                         data(1) = &H8 'Fan is on
-                        SerialPort1.Write(data, 0, 2) 'Fan is on
+                        SendLEDData(data(1)) 'Fan is on
                         FanStatusTextBox.Text = "On"
                         ModeTextBox.Text = "Cooling"
                     ElseIf SeperateNumberFromSymbol(RoomTempTextBox.Text) < (SeperateNumberFromSymbol(TempLowTextBox.Text) + 2) Then
                         data(1) = &H8 'Fan is on
-                        SerialPort1.Write(data, 0, 2) 'Fan is on
+                        SendLEDData(data(1)) 'Fan is on
                         FanStatusTextBox.Text = "On"
                         ModeTextBox.Text = "Heating"
                     Else
                         data(1) = &H0 'Fan is on
-                        SerialPort1.Write(data, 0, 2) 'Fan is on
+                        SendLEDData(data(1)) 'Fan is on
                         ModeTextBox.Text = "Off"
                         hysteresisStart = False
                         Timer5s.Start()
@@ -282,25 +325,27 @@ Public Class HVACSmartHomeController
             ModeTextBox.Text = "Safety Locked"
             data(0) = &H20 'Writes to the Digital Output
             data(1) = &H1 'Safety Lock
-            SerialPort1.Write(data, 0, 2) 'Fan is off
+            SendLEDData(data(1)) 'Fan is off
         End If
     End Sub
 
     Private Sub Timer30s_Tick(sender As Object, e As EventArgs) Handles Timer30s.Tick
         If ModeTextBox.Text = "Heating" Then
             If SeperateNumberFromSymbol(MachineTempTextBox.Text) > SeperateNumberFromSymbol(RoomTempTextBox.Text) Then
-                FaultTextBox.Text = "All Good"
+                'FaultTextBox.Text = "All Good"
             Else
-                FaultTextBox.Text = "Aw Dang It"
+                LogData("System temperature verification failed - Maintenance required")
+                FaultTextBox.Text = "System temperature verification failed - Maintenance required"
             End If
         ElseIf ModeTextBox.Text = "Cooling" Then
             If SeperateNumberFromSymbol(MachineTempTextBox.Text) < SeperateNumberFromSymbol(RoomTempTextBox.Text) Then
-                FaultTextBox.Text = "All Good"
+                'FaultTextBox.Text = "All Good"
             Else
-                FaultTextBox.Text = "Aw Dang It"
+                LogData("System temperature verification failed - Maintenance required")
+                FaultTextBox.Text = "System temperature verification failed - Maintenance required"
             End If
         Else
-            FaultTextBox.Text = "All good Neutral"
+            'FaultTextBox.Text = "All good Neutral"
         End If
     End Sub
 
@@ -310,7 +355,7 @@ Public Class HVACSmartHomeController
         RoomTempTextBox.ForeColor = Color.Black
         ModeTextBox.Text = "Off"
         data(1) = &H0 'Fan is off
-        SerialPort1.Write(data, 0, 2) 'Fan is off
+        SendLEDData(data(1)) 'Fan is off
         FanStatusTextBox.Text = "Off"
         Timer5s.Stop()
     End Sub
@@ -321,8 +366,6 @@ Public Class HVACSmartHomeController
         Else
             If coolingControl = True Then
                 ModeTextBox.Text = "Manual Cooling"
-            Else
-                ModeTextBox.Text = "ermm..."
             End If
         End If
         ManualControlTimer.Stop()
@@ -333,6 +376,25 @@ Public Class HVACSmartHomeController
     End Sub
 
     Private Sub Timer5sBootUp_Tick(sender As Object, e As EventArgs) Handles Timer5sBootUp.Tick
+        If differentialPressureSensor = True Then
+            LogData("Differential pressure sensor LOW - Heating/Cooling disabled")
+            differentialPressureSensor = False
+        End If
+        Timer5sBootUp.Stop()
+    End Sub
+
+    Private Sub Timer2m_Tick(sender As Object, e As EventArgs) Handles Timer2m.Tick
+        If differentialPressureSensor = True Then
+            LogData("Differential pressure sensor LOW - Heating/Cooling disabled")
+            differentialPressureSensor = False
+        End If
+    End Sub
+
+    Private Sub Label4_Click(sender As Object, e As EventArgs)
+
+    End Sub
+
+    Private Sub ByteTextBox_TextChanged(sender As Object, e As EventArgs) Handles ByteTextBox.TextChanged
 
     End Sub
 End Class
