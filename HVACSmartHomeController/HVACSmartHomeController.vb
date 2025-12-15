@@ -376,6 +376,7 @@ Public Class HVACSmartHomeController
             data(1) = &H1 'Safety Lock
             SendLEDData(data(1)) 'Fan is off
         End If
+        ClockTextBox.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
     End Sub
 
     Private Sub Timer30s_Tick(sender As Object, e As EventArgs) Handles Timer30s.Tick

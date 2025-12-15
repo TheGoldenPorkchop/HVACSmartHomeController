@@ -60,6 +60,7 @@ Partial Class HVACSmartHomeController
         Me.TimerSerial = New System.Windows.Forms.Timer(Me.components)
         Me.Label1 = New System.Windows.Forms.Label()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
+        Me.ClockTextBox = New System.Windows.Forms.TextBox()
         Me.AnalogCoordsGroupBox.SuspendLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -276,6 +277,7 @@ Partial Class HVACSmartHomeController
         Me.ModeTextBox.ReadOnly = True
         Me.ModeTextBox.Size = New System.Drawing.Size(146, 25)
         Me.ModeTextBox.TabIndex = 27
+        Me.ModeTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
         'FanModeTextBox
         '
@@ -285,6 +287,7 @@ Partial Class HVACSmartHomeController
         Me.FanModeTextBox.ReadOnly = True
         Me.FanModeTextBox.Size = New System.Drawing.Size(100, 25)
         Me.FanModeTextBox.TabIndex = 28
+        Me.FanModeTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
         'Label7
         '
@@ -335,6 +338,7 @@ Partial Class HVACSmartHomeController
         Me.FanStatusTextBox.ReadOnly = True
         Me.FanStatusTextBox.Size = New System.Drawing.Size(100, 25)
         Me.FanStatusTextBox.TabIndex = 32
+        Me.FanStatusTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
         'Label11
         '
@@ -400,12 +404,23 @@ Partial Class HVACSmartHomeController
         Me.PictureBox1.TabIndex = 39
         Me.PictureBox1.TabStop = False
         '
+        'ClockTextBox
+        '
+        Me.ClockTextBox.Font = New System.Drawing.Font("Segoe UI", 7.8!, System.Drawing.FontStyle.Bold)
+        Me.ClockTextBox.Location = New System.Drawing.Point(271, 12)
+        Me.ClockTextBox.Name = "ClockTextBox"
+        Me.ClockTextBox.ReadOnly = True
+        Me.ClockTextBox.Size = New System.Drawing.Size(230, 25)
+        Me.ClockTextBox.TabIndex = 40
+        Me.ClockTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
         'HVACSmartHomeController
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(246, Byte), Integer), CType(CType(146, Byte), Integer), CType(CType(64, Byte), Integer))
         Me.ClientSize = New System.Drawing.Size(800, 450)
+        Me.Controls.Add(Me.ClockTextBox)
         Me.Controls.Add(Me.PictureBox1)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.ExitButton)
@@ -476,4 +491,5 @@ Partial Class HVACSmartHomeController
     Friend WithEvents TimerSerial As Timer
     Friend WithEvents Label1 As Label
     Friend WithEvents PictureBox1 As PictureBox
+    Friend WithEvents ClockTextBox As TextBox
 End Class
