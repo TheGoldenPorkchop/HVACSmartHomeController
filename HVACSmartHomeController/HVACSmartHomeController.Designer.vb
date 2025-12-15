@@ -109,6 +109,7 @@ Partial Class HVACSmartHomeController
         '
         Me.UnconnectedRadioButton.AutoSize = True
         Me.UnconnectedRadioButton.Checked = True
+        Me.UnconnectedRadioButton.Enabled = False
         Me.UnconnectedRadioButton.Location = New System.Drawing.Point(121, 73)
         Me.UnconnectedRadioButton.Name = "UnconnectedRadioButton"
         Me.UnconnectedRadioButton.Size = New System.Drawing.Size(109, 21)
@@ -120,6 +121,7 @@ Partial Class HVACSmartHomeController
         'ConnectedRadioButton
         '
         Me.ConnectedRadioButton.AutoSize = True
+        Me.ConnectedRadioButton.Enabled = False
         Me.ConnectedRadioButton.Location = New System.Drawing.Point(121, 47)
         Me.ConnectedRadioButton.Name = "ConnectedRadioButton"
         Me.ConnectedRadioButton.Size = New System.Drawing.Size(94, 21)

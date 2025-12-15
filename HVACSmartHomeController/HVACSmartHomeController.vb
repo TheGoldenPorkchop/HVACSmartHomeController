@@ -24,6 +24,14 @@ Public Class HVACSmartHomeController
             RoomTempTextBox.Text = "???"
         End Try
     End Sub
+    Sub GetNewerPorts()
+        Dim ports() = SerialPort1.GetPortNames()
+        'PortsComboBox.Items.Clear()
+
+        For Each port In ports
+            PortsComboBox.Items.Add(port)
+        Next
+    End Sub
 
     Sub Connect()
         SerialPort1.Close()
@@ -31,18 +39,27 @@ Public Class HVACSmartHomeController
         SerialPort1.Parity = Parity.None
         SerialPort1.StopBits = StopBits.One
         SerialPort1.DataBits = 8
-        Try
-            SerialPort1.PortName = PortsComboBox.Text
-            ConnectedRadioButton.Checked = True
-            FaultTextBox.Text = ""
-        Catch ex As Exception
-            MsgBox("Select or Change your Port via the Combo Box")
-            LogData("Select or Change your Port via the Combo Box")
-            FaultTextBox.Text = "Select or Change your Port via the Combo Box"
-            MachineTempTextBox.Text = "???"
-            RoomTempTextBox.Text = "???"
-        End Try
-        SerialPort1.Open()
+        Dim portNumber As Integer = 0
+        portNumber = -1
+        For Each port In PortsComboBox.Items
+            Try
+                portNumber = portNumber + 1
+                PortsComboBox.SelectedIndex = portNumber
+                SerialPort1.PortName = PortsComboBox.Text
+                ConnectedRadioButton.Checked = True
+                FaultTextBox.Text = ""
+                SerialPort1.Open()
+                Exit Sub
+            Catch ex As Exception
+                'hi
+            End Try
+        Next
+        MsgBox("Select or Change your Port via the Combo Box")
+        LogData("Select or Change your Port via the Combo Box")
+        FaultTextBox.Text = "Select or Change your Port via the Combo Box"
+        MachineTempTextBox.Text = "???"
+        RoomTempTextBox.Text = "???"
+
     End Sub
 
     Sub QyatRead()
@@ -424,6 +441,9 @@ Public Class HVACSmartHomeController
 
     Private Sub TimerSerial_Tick(sender As Object, e As EventArgs) Handles TimerSerial.Tick
         If UnconnectedRadioButton.Checked = True Then
+            'GetNewerPorts()
+            'PortsComboBox.Items.Clear()
+            GetPorts()
             Connect()
         End If
     End Sub
